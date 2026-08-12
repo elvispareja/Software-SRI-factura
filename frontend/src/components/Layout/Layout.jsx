@@ -78,28 +78,22 @@ export default function Layout() {
     pathname.startsWith('/cotizaciones') ||
     pathname.startsWith('/recurrentes') ||
     pathname.startsWith('/comprobantes');
-  const esEgresos =
-    pathname.startsWith('/gastos') ||
-    pathname.startsWith('/egresos') ||
-    pathname.startsWith('/liquidaciones');
+  const esEgresos = pathname.startsWith('/gastos') || pathname.startsWith('/egresos');
   const esCuentas = pathname.startsWith('/cuentas');
 
   // Un solo desplegable abierto a la vez: abrir uno cierra el anterior, en
   // vez de cuatro banderas independientes que se acumulaban en pantalla.
-  const seccionDeRuta = esReceptores
-    ? 'receptores'
-    : esComprobantes
-      ? 'comprobantes'
-      : esEgresos
-        ? 'egresos'
-        : esCuentas
-          ? 'cuentas'
-          : null;
+  const seccionDeRuta = esComprobantes
+    ? 'comprobantes'
+    : esEgresos
+      ? 'egresos'
+      : esCuentas
+        ? 'cuentas'
+        : null;
   const [seccionAbierta, setSeccionAbierta] = useState(seccionDeRuta);
   const alternarSeccion = (seccion) =>
     setSeccionAbierta((actual) => (actual === seccion ? null : seccion));
 
-  const recOpen = seccionAbierta === 'receptores';
   const compOpen = seccionAbierta === 'comprobantes';
   const egrOpen = seccionAbierta === 'egresos';
   const ctasOpen = seccionAbierta === 'cuentas';
@@ -239,56 +233,15 @@ export default function Layout() {
             {mostrarEtiquetas && <span className={styles.navLabel}>Inicio</span>}
           </NavLink>
 
-          {/* Receptores colapsable */}
-          <button
-            type="button"
-            className={`${styles.navItem} ${styles.navToggle} ${esReceptores ? styles.active : ''}`}
-            onClick={() => alternarSeccion('receptores')}
-            aria-expanded={recOpen}
+          {/* Receptores: el filtro Cliente/Proveedor/Transportista ya vive en la propia página */}
+          <NavLink
+            to="/receptores"
+            className={({ isActive }) => `${styles.navItem} ${isActive || esReceptores ? styles.active : ''}`}
             title={mostrarEtiquetas ? undefined : 'Receptores'}
           >
             <Users size={19} className={styles.navIcon} />
-            {mostrarEtiquetas && (
-              <>
-                <span className={styles.navLabel}>Receptores</span>
-                <ChevronDown
-                  size={16}
-                  className={`${styles.chevron} ${recOpen ? styles.chevronAbierto : ''}`}
-                />
-              </>
-            )}
-          </button>
-          {mostrarEtiquetas && recOpen && (
-            <div className={styles.subNavReceptores}>
-              <NavLink
-                to="/receptores?rol=cliente"
-                className={({ isActive }) =>
-                  `${styles.subItem} ${isActive && pathname.includes('cliente') ? styles.subActive : ''}`
-                }
-              >
-                <span className={styles.subDot} aria-hidden="true" />
-                Clientes
-              </NavLink>
-              <NavLink
-                to="/receptores?rol=proveedor"
-                className={({ isActive }) =>
-                  `${styles.subItem} ${isActive && pathname.includes('proveedor') ? styles.subActive : ''}`
-                }
-              >
-                <span className={styles.subDot} aria-hidden="true" />
-                Proveedores
-              </NavLink>
-              <NavLink
-                to="/receptores?rol=transportista"
-                className={({ isActive }) =>
-                  `${styles.subItem} ${isActive && pathname.includes('transportista') ? styles.subActive : ''}`
-                }
-              >
-                <span className={styles.subDot} aria-hidden="true" />
-                Transportista
-              </NavLink>
-            </div>
-          )}
+            {mostrarEtiquetas && <span className={styles.navLabel}>Receptores</span>}
+          </NavLink>
 
           {/* INVENTARIO */}
           {mostrarEtiquetas && <div className={styles.navGrupo}>Inventario</div>}
@@ -325,6 +278,7 @@ export default function Layout() {
             <div className={styles.subNavComprobantes}>
               <NavLink
                 to="/comprobantes"
+                end
                 className={({ isActive }) =>
                   `${styles.subItem} ${isActive ? styles.subActive : ''}`
                 }
@@ -417,28 +371,12 @@ export default function Layout() {
           {mostrarEtiquetas && egrOpen && (
             <div className={styles.subNavEgresos}>
               <NavLink
-                to="/liquidaciones"
-                className={({ isActive }) =>
-                  `${styles.subItemSm} ${isActive ? styles.subActive : ''}`
-                }
-              >
-                Compras
-              </NavLink>
-              <NavLink
                 to="/gastos"
                 className={({ isActive }) =>
                   `${styles.subItemSm} ${isActive ? styles.subActive : ''}`
                 }
               >
                 Gastos
-              </NavLink>
-              <NavLink
-                to="/articulos"
-                className={({ isActive }) =>
-                  `${styles.subItemSm} ${isActive ? styles.subActive : ''}`
-                }
-              >
-                Gastos (Tipos)
               </NavLink>
             </div>
           )}

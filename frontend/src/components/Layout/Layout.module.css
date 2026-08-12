@@ -208,16 +208,6 @@
   transform: rotate(180deg);
 }
 
-/* Sub-nav Receptores: border-left 1.5px rgba(255,255,255,.09) */
-.subNavReceptores {
-  margin: 2px 0 4px 22px;
-  padding-left: 12px;
-  border-left: 1.5px solid rgba(255, 255, 255, 0.09);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .subItem {
   display: flex;
   align-items: center;
@@ -678,6 +668,7 @@
 
 .content {
   flex: 1 1 0;
+  min-width: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 14px 20px 44px;
