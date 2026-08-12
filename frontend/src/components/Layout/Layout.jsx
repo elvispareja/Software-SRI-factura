@@ -69,15 +69,14 @@ export default function Layout() {
   // Submenús colapsables — mockup líneas 57-131
   const pathname = location.pathname;
   const esReceptores = pathname.startsWith('/receptores');
+  // Solo las rutas que de verdad viven en el submenú de Comprobantes (líneas
+  // ~280-327). Cotización, Notas de Venta y Recurrente son ítems propios,
+  // fuera de ese submenú, y no deben encenderlo.
   const esComprobantes =
     pathname.startsWith('/comprobantes') ||
     pathname.startsWith('/liquidaciones') ||
     pathname.startsWith('/retenciones') ||
-    pathname.startsWith('/guias') ||
-    pathname.startsWith('/notas-venta') ||
-    pathname.startsWith('/cotizaciones') ||
-    pathname.startsWith('/recurrentes') ||
-    pathname.startsWith('/comprobantes');
+    pathname.startsWith('/guias');
   const esEgresos = pathname.startsWith('/gastos') || pathname.startsWith('/egresos');
   const esCuentas = pathname.startsWith('/cuentas');
 
@@ -98,8 +97,11 @@ export default function Layout() {
   const egrOpen = seccionAbierta === 'egresos';
   const ctasOpen = seccionAbierta === 'cuentas';
 
+  // Sincroniza con la ruta en cada navegación, incluido cerrar el submenú
+  // cuando se entra a una página que no pertenece a ninguno (antes se
+  // quedaba abierto el de la sección anterior).
   useEffect(() => {
-    if (seccionDeRuta) setSeccionAbierta(seccionDeRuta);
+    setSeccionAbierta(seccionDeRuta);
   }, [seccionDeRuta]);
 
   useEffect(() => {
