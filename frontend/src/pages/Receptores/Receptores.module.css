@@ -1,0 +1,766 @@
+.container {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.btnPrimary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background var(--transition-fast);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+}
+
+.btnSecondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: 1px solid var(--glass-border);
+  transition: background var(--transition-fast);
+}
+
+.btnSecondary:hover {
+  background: var(--surface-2);
+}
+
+.btnIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-fast);
+}
+
+.btnIcon:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+/* Table Styles */
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  width: 350px;
+}
+
+.searchIcon {
+  color: var(--text-muted);
+  margin-right: 12px;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.btnFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.btnFilter:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 16px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.table tbody tr:hover {
+  background: var(--surface-0);
+}
+
+.identificacionGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.idNumber {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.idType {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.mainText {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.subText {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.badge {
+  background: var(--glass-border);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.statusActive {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* Filtros, estado vacío y badges compartidos con los demás listados */
+.filtros {
+  composes: filtros from '../../styles/tabla.module.css';
+}
+.filtroSelect {
+  composes: filtroSelect from '../../styles/tabla.module.css';
+}
+.btnLimpiar {
+  composes: btnLimpiar from '../../styles/tabla.module.css';
+}
+.sinCoincidencias {
+  composes: sinCoincidencias from '../../styles/tabla.module.css';
+}
+.statusInactive {
+  composes: statusInactive from '../../styles/tabla.module.css';
+}
+
+/* Form Styles */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.tabsContainer {
+  display: flex;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--glass-border);
+  gap: 32px;
+}
+
+.tab {
+  padding: 20px 0;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tabActive {
+  color: var(--accent-primary);
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-primary);
+  border-radius: 2px 2px 0 0;
+}
+
+.tabContent {
+  padding: 32px 24px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroupFull {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label, .formGroupFull label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  border-color: var(--accent-primary);
+}
+
+.inputWithAction {
+  display: flex;
+  gap: 8px;
+}
+
+.inputWithAction .input {
+  flex-grow: 1;
+}
+
+.btnAction {
+  background: var(--accent-primary);
+  color: white;
+  width: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+}
+
+.btnAction:hover {
+  background: var(--accent-hover);
+}
+
+.alertBox {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--info-soft);
+  border: 1px solid var(--info-border);
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+.alertIcon {
+  color: var(--info);
+  flex-shrink: 0;
+}
+
+.alertContent {
+  flex-grow: 1;
+}
+
+.alertContent h4 {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.alertContent p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface-2);
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchWrapper {
+    width: 100%;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 4px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+}
+
+/* Ayudas de validación y estados del formulario */
+.inputError {
+  border-color: var(--error);
+}
+
+.ayuda,
+.ayudaOk,
+.ayudaError {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ayuda {
+  color: var(--text-muted);
+}
+
+.ayuda code {
+  font-family: monospace;
+  color: var(--text-secondary);
+}
+
+.ayudaOk {
+  color: var(--success);
+}
+
+.ayudaError {
+  color: var(--error);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnAction:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.input option {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Banner de error al guardar: mismo par de tokens que `.ayudaError`, para que
+   un fallo se lea igual en toda la pantalla. */
+.avisoError {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--error-soft);
+  border: 1px solid var(--error);
+  color: var(--error);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* ---- Listado de receptores ----
+ *
+ * Venían como hex literales dentro del JSX, que no participan del tema: la
+ * razón social se pintaba en #0f1e33 sobre el panel #111f37 del tema oscuro,
+ * es decir, invisible. Ahora el mismo marcado sirve para claro y oscuro.
+ */
+.celdaNombre {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+/* Decoración repartida por hash del nombre, no dato del receptor. Cada pareja
+   es fondo suave + texto del mismo token, que es lo que asegura el contraste
+   en los dos temas. */
+.avatarNeutro {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.avatarAcento {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+.avatarInfo {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.avatarExito {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.avatarAviso {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.datosNombre {
+  min-width: 0;
+}
+
+.razonSocial {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.correoCelda {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.identificacionCelda {
+  font-weight: 600;
+}
+
+.codigoCelda {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.chip {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chipNeutro {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.chipAcento {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+/* Activo/Inactivo es dato, pero verde y rojo ya son tokens de estado y
+   cambian de tono con el tema sin perder el significado. */
+.pildora {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pildoraExito {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.pildoraError {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.celdaAcciones {
+  white-space: nowrap;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.envoltorioMenu {
+  position: relative;
+  display: inline-flex;
+}
+
+.btnIconoTabla {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 7px;
+  border-radius: 8px;
+  display: inline-flex;
+}
+
+.btnIconoTabla:hover {
+  color: var(--text-primary);
+  background: var(--surface-1);
+}
+
+.capaCierre {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.menuAcciones {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 41;
+  background: var(--panel-bg);
+  border: 1px solid var(--field-borde);
+  border-radius: 10px;
+  box-shadow: var(--panel-sombra);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 160px;
+}
+
+.menuOpcion {
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.menuOpcion:hover {
+  background: var(--surface-1);
+}
+
+.menuOpcionPeligro {
+  color: var(--error);
+}
+
+.menuOpcion:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Chips de segmento (Todos / Clientes / …). El activo invierte los tokens de
+   texto y fondo: en claro queda el navy sobre blanco del prototipo y en oscuro
+   se invierte solo, sin quedar navy sobre navy. */
+.chipsSegmento {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chipSegmento {
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--field-borde);
+  background: var(--panel-bg);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chipSegmento:hover {
+  color: var(--text-primary);
+}
+
+.chipSegmentoActivo {
+  background: var(--text-primary);
+  color: var(--bg-secondary);
+  border-color: var(--text-primary);
+}
+
+/* El halo naranja se queda en rgba del naranja de marca: `--accent-primary`
+   vale #f26a35 en los dos temas, y no hay token de sombra de acento. */
+.btnNuevo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent-primary);
+  color: var(--accent-contrast);
+  border-radius: 11px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}

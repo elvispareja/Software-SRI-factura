@@ -1,0 +1,324 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 4px;
+}
+
+.header { margin-bottom: 2px; }
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+/* Top row */
+.topRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.leftCol {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 4 cards acción */
+.accionesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+/* Las cuatro tarjetas de acción son oscuras por diseño, también en el tema
+   claro: son el bloque de contraste de la pantalla. Su fondo y los colores que
+   van encima forman un par cerrado —siempre claro sobre oscuro— así que no
+   dependen del tema y se quedan literales a propósito. */
+.accionCard {
+  background: linear-gradient(160deg, #233247, #1a2537);
+  border-radius: 18px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 10px 26px rgba(16, 31, 54, 0.14);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.accionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgba(16, 31, 54, 0.24);
+}
+
+.accionIcono {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.iconoCian { background: rgba(42, 184, 214, 0.14); color: #2ec2e6; }
+.iconoNaranja { background: rgba(242, 106, 53, 0.16); color: #f6863f; }
+
+.accionLabel {
+  color: var(--accent-contrast);
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* KPIs */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.kpiCard {
+  background: var(--panel-bg);
+  border-radius: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--panel-borde);
+  box-shadow: var(--panel-sombra-suave);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.kpiLabel {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.kpiValue {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+}
+
+.kpiIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--info-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--info);
+  flex: 0 0 auto;
+}
+
+/* Plan state */
+.planCard {
+  flex: 0 1 300px;
+  min-width: 250px;
+  background: var(--panel-bg);
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid var(--panel-borde);
+  box-shadow: var(--panel-sombra);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.planTitle { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: var(--text-primary); }
+.planUso { font-size: 12px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 8px; }
+.planUso span { color: var(--text-primary); }
+.planBar { height: 9px; border-radius: 9px; background: var(--surface-2); overflow: hidden; margin-bottom: 20px; }
+.planFill { height: 100%; background: linear-gradient(90deg, var(--marca-inicio), var(--marca-brillo)); border-radius: 9px; }
+.planNombre { font-size: 14.5px; font-weight: 800; margin-bottom: 10px; color: var(--text-primary); }
+.planMeta { font-size: 13px; color: var(--text-secondary); line-height: 1.9; }
+.planMeta span { color: var(--text-primary); font-weight: 600; }
+.planDots { position: absolute; bottom: -10px; right: -6px; opacity: 0.5; pointer-events: none; }
+/* El adorno de puntos se tiñe desde aquí porque el atributo `fill` del SVG no
+   acepta var(): en el JSX los <circle> van sin relleno propio. */
+.planDots circle { fill: var(--marca-inicio); }
+
+/* Charts */
+.chartsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.chartCard {
+  flex: 2 1 460px;
+  min-width: 0;
+  background: var(--panel-bg);
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--panel-borde);
+  box-shadow: var(--panel-sombra);
+}
+
+.chartHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.chartTitle { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+.chartSub { font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+
+.chartActions { display: flex; gap: 6px; }
+.chartBtn {
+  background: var(--surface-1);
+  border: none;
+  border-radius: 9px;
+  padding: 7px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+}
+.chartBtn:hover { background: var(--surface-2); }
+
+/* Punto activo de la serie: el anillo tiene que ser del color del panel para
+   que parezca recortado sobre él, y eso cambia con el tema. Se aplica por
+   clase porque recharts lo pinta como atributo SVG, donde var() no resuelve. */
+.puntoActivo {
+  fill: var(--marca-inicio);
+  stroke: var(--panel-bg);
+  stroke-width: 2;
+}
+
+.chartWrapper { width: 100%; height: 240px; }
+
+.chartFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--field-borde);
+}
+
+.chartFooterText { font-size: 13px; color: var(--text-secondary); }
+.chartFooterText strong { color: var(--text-primary); font-weight: 800; }
+
+.donutCard {
+  flex: 1 1 300px;
+  min-width: 260px;
+  background: var(--panel-bg);
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--panel-borde);
+  box-shadow: var(--panel-sombra);
+}
+
+.donutBody { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+.donutChart { position: relative; width: 170px; height: 170px; flex: 0 0 auto; }
+.donutCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.donutNum { font-size: 30px; font-weight: 800; line-height: 1; color: var(--text-primary); }
+.donutLabel { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+.donutLegend { flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 11px; }
+.legendRow { display: flex; align-items: center; gap: 10px; }
+.legendDot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+.legendLabel { font-size: 13px; color: var(--text-secondary); font-weight: 600; line-height: 1.2; }
+.legendVal { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+
+/* Aviso */
+.avisoPanel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-left: 3px solid var(--warning);
+  background: var(--panel-bg);
+  border-radius: var(--panel-radio);
+  box-shadow: var(--panel-sombra);
+}
+.avisoPanel > svg { color: var(--warning); flex-shrink: 0; }
+.avisoPanel > div { flex: 1; min-width: 0; }
+.avisoTitulo { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.avisoDetalle { font-size: 0.85rem; color: var(--text-secondary); }
+.avisoAccion {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* Listas destacadas */
+.listasGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+.listaPanel { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+.listaCabecera { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.listaEnlace { font-size: 0.82rem; color: var(--accent-primary); font-weight: 600; }
+.lista { display: flex; flex-direction: column; }
+.listaFila { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--glass-border); }
+.listaFila:last-child { border-bottom: none; }
+.listaTexto { display: flex; flex-direction: column; min-width: 0; }
+.listaPrincipal { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.listaSecundario { font-size: 0.78rem; color: var(--text-muted); }
+.listaValor { font-weight: 700; color: var(--text-primary); white-space: nowrap; }
+
+.vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 120px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 20px;
+}
+.esqueleto { min-height: 96px; animation: latido 1.4s ease-in-out infinite; }
+@keyframes latido { 0%,100%{opacity:.45} 50%{opacity:.8} }
+
+@media (max-width: 1100px) {
+  .chartWrapper { height: 230px; }
+}
+@media (max-width: 560px) {
+  .container { padding: 4px; }
+  .title { font-size: 1.5rem; }
+  .kpiValue { font-size: 22px; }
+}
+
+/* Aviso de ambiente de pruebas dentro de la tarjeta de estado. */
+.planAviso {
+  margin-top: 12px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}

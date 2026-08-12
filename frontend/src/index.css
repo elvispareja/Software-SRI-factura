@@ -1,0 +1,308 @@
+/**
+ * Design tokens — Cloud Factur AI.
+ *
+ * Los valores salen del prototipo `Cloud World Office.dc.html`, que es la
+ * referencia visual del producto. Se extrajeron de ahí y no se inventaron:
+ *
+ *   naranja de marca  #f26a35   (el color más usado del prototipo)
+ *   cian de marca     #2aa9d6 → #1f6fd0  (degradado del logotipo)
+ *   fondo de página   #e9edf3
+ *   barra lateral     linear-gradient(180deg, #111f37, #0a1424)
+ *   texto             #0f1e33 · #5b6b82 · #8a99ad
+ *   tarjetas          blanco, radio 18px, sombra 0 10px 26px rgba(16,31,54,.05)
+ *
+ * Regla: ningún componente define colores literales. Todo pasa por estas
+ * variables, que es lo que permite que el tema claro y el oscuro convivan
+ * sin duplicar hojas de estilo.
+ *
+ * El tema se resuelve en tres estados:
+ *   1. `:root`                        -> tema claro (el del prototipo)
+ *   2. `prefers-color-scheme: dark`   -> oscuro si el usuario no eligió nada
+ *   3. `[data-tema="oscuro"|"claro"]` -> elección explícita, gana siempre
+ *
+ * El atributo `data-tema` lo pone `TemaProvider`, y el script inline de
+ * index.html lo aplica antes del primer pintado para evitar el parpadeo.
+ */
+
+:root {
+  /* Fondos */
+  --bg-primary: #e9edf3;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f4f6f9;
+
+  /* Texto */
+  --text-primary: #0f1e33;
+  --text-secondary: #5b6b82;
+  --text-muted: #8a99ad;
+
+  /* Acento de marca */
+  --accent-primary: #f26a35;
+  --accent-hover: #dd5622;
+  --accent-light: #fff4ed;
+  --accent-contrast: #ffffff;
+
+  /* Marca: el degradado del logotipo y el cian del "AI" */
+  --marca-inicio: #2aa9d6;
+  --marca-fin: #1f6fd0;
+  --marca-brillo: #38b6e0;
+
+  /* Barra lateral: oscura sobre fondo claro, como el prototipo */
+  --lateral-fondo: linear-gradient(180deg, #111f37, #0a1424);
+  --lateral-texto: #c7d2e0;
+  --lateral-texto-suave: #7d90a8;
+  --lateral-hover: rgba(255, 255, 255, 0.07);
+  --lateral-activo: linear-gradient(100deg, #f26a35, #f26a35cc);
+
+  /* Estados */
+  --success: #15803d;
+  --error: #e11d48;
+  --warning: #b45309;
+  --info: #1f6fd0;
+  /* Sexto estado: lo pide "devuelto" (dinero que vuelve al cliente), que no es
+     ni éxito ni error ni aviso y tenía que distinguirse de "residuo pendiente",
+     que ya usa el azul de --info. */
+  --violeta: #6d28d9;
+
+  --success-soft: #dcfce7;
+  --error-soft: #fee2e2;
+  --warning-soft: #fef3c7;
+  --info-soft: #e8f1fc;
+  --violeta-soft: #ede9fe;
+  --info-border: rgba(31, 111, 208, 0.25);
+
+  /* Superficies sobre la tarjeta: hover de filas, botones sutiles */
+  --surface-0: #f8fafc;
+  --surface-1: #f1f5f9;
+  --surface-2: #e2e8f0;
+
+  /* Campos de formulario */
+  --field-bg: #f8fafc;
+  --field-bg-strong: #f1f5f9;
+  --field-borde: #dfe5ec;
+
+  /* Tarjetas — el `.glass-panel` heredado apunta a estos tokens */
+  --panel-bg: #ffffff;
+  --panel-borde: rgba(16, 31, 54, 0.05);
+  --panel-sombra: 0 10px 26px rgba(16, 31, 54, 0.05);
+  --panel-sombra-suave: 0 8px 22px rgba(16, 31, 54, 0.05);
+  --panel-radio: 18px;
+
+  /* Cloud World: WhatsApp AI / WS rail / donut / header glass */
+  --cwo-whatsapp-from: #d6f6e5;
+  --cwo-whatsapp-to: #c4f0dd;
+  --cwo-whatsapp-borde: #9fe3c2;
+  --cwo-whatsapp-input-borde: #a9e5c9;
+  --cwo-whatsapp-sombra: 0 6px 18px rgba(37, 158, 101, 0.16);
+  --ws-rail: var(--accent-primary);
+  --ws-rail-facturas: #f26a35;
+  --ws-rail-liquidacion: #8b5cf6;
+  --ws-rail-retencion: #1f6fd0;
+  --ws-rail-guia: #16a34a;
+  --ws-fondo-from: #111f33;
+  --ws-fondo-to: #233450;
+  --donut-facturas: #0f1e33;
+  --donut-liquidaciones: #3b6fd4;
+  --donut-notas: #f26a35;
+  --donut-otras: #22c3d6;
+  --header-glass-from: rgba(255, 255, 255, 0.78);
+  --header-glass-to: rgba(228, 236, 247, 0.55);
+  --header-borde: rgba(255, 255, 255, 0.7);
+  --header-sombra: 0 12px 34px rgba(16, 31, 54, 0.09);
+
+  /* Alias heredados: muchos módulos ya los usan por nombre */
+  --glass-bg: var(--panel-bg);
+  --glass-border: var(--panel-borde);
+  --glass-shadow: var(--panel-sombra);
+
+  /* Halos decorativos del fondo */
+  --halo-accent: rgba(242, 106, 53, 0.06);
+  --halo-info: rgba(42, 169, 214, 0.07);
+
+  /* Transiciones */
+  --transition-fast: 0.16s ease;
+  --transition-normal: 0.3s ease;
+
+  color-scheme: light;
+}
+
+/**
+ * Tema oscuro.
+ *
+ * El prototipo solo define el claro. Este oscuro se deriva de él: conserva el
+ * naranja y el cian de marca —son la identidad— y traslada los grises a la
+ * misma familia azulada del `#0f1e33`, para que no parezca otro producto.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --bg-primary: #0a1424;
+    --bg-secondary: #111f37;
+    --bg-tertiary: #16263f;
+
+    --text-primary: #eef2f7;
+    --text-secondary: #a9b6c6;
+    --text-muted: #7d90a8;
+
+    --accent-primary: #f26a35;
+    --accent-hover: #ff8352;
+    --accent-light: rgba(242, 106, 53, 0.16);
+
+    --success: #4ade80;
+    --error: #fb7185;
+    --warning: #fbbf24;
+    --info: #60a5fa;
+    --violeta: #c4b5fd;
+
+    --success-soft: rgba(74, 222, 128, 0.14);
+    --error-soft: rgba(251, 113, 133, 0.14);
+    --warning-soft: rgba(251, 191, 36, 0.14);
+    --info-soft: rgba(96, 165, 250, 0.14);
+    --violeta-soft: rgba(167, 139, 250, 0.16);
+    --info-border: rgba(96, 165, 250, 0.3);
+
+    --surface-0: rgba(255, 255, 255, 0.03);
+    --surface-1: rgba(255, 255, 255, 0.06);
+    --surface-2: rgba(255, 255, 255, 0.1);
+
+    --field-bg: rgba(0, 0, 0, 0.22);
+    --field-bg-strong: rgba(0, 0, 0, 0.32);
+    --field-borde: rgba(255, 255, 255, 0.1);
+
+    --panel-bg: #111f37;
+    --panel-borde: rgba(255, 255, 255, 0.07);
+    --panel-sombra: 0 10px 26px rgba(0, 0, 0, 0.35);
+    --panel-sombra-suave: 0 8px 22px rgba(0, 0, 0, 0.3);
+
+    --halo-accent: rgba(242, 106, 53, 0.06);
+    --halo-info: rgba(42, 169, 214, 0.06);
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-tema='oscuro'] {
+  --bg-primary: #0a1424;
+  --bg-secondary: #111f37;
+  --bg-tertiary: #16263f;
+
+  --text-primary: #eef2f7;
+  --text-secondary: #a9b6c6;
+  --text-muted: #7d90a8;
+
+  --accent-primary: #f26a35;
+  --accent-hover: #ff8352;
+  --accent-light: rgba(242, 106, 53, 0.16);
+
+  --success: #4ade80;
+  --error: #fb7185;
+  --warning: #fbbf24;
+  --info: #60a5fa;
+  --violeta: #c4b5fd;
+
+  --success-soft: rgba(74, 222, 128, 0.14);
+  --error-soft: rgba(251, 113, 133, 0.14);
+  --warning-soft: rgba(251, 191, 36, 0.14);
+  --info-soft: rgba(96, 165, 250, 0.14);
+  --violeta-soft: rgba(167, 139, 250, 0.16);
+  --info-border: rgba(96, 165, 250, 0.3);
+
+  --surface-0: rgba(255, 255, 255, 0.03);
+  --surface-1: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.1);
+
+  --field-bg: rgba(0, 0, 0, 0.22);
+  --field-bg-strong: rgba(0, 0, 0, 0.32);
+  --field-borde: rgba(255, 255, 255, 0.1);
+
+  --panel-bg: #111f37;
+  --panel-borde: rgba(255, 255, 255, 0.07);
+  --panel-sombra: 0 10px 26px rgba(0, 0, 0, 0.35);
+  --panel-sombra-suave: 0 8px 22px rgba(0, 0, 0, 0.3);
+
+  --halo-accent: rgba(242, 106, 53, 0.06);
+  --halo-info: rgba(42, 169, 214, 0.06);
+
+  color-scheme: dark;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  color: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* Los importes se alinean por columna: sin esto, las cifras de una tabla
+   bailan según los dígitos que tenga cada una. */
+.cifra,
+[data-cifra] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Foco visible y consistente en todo lo interactivo */
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/**
+ * Tarjeta del sistema.
+ *
+ * Conserva el nombre `.glass-panel` porque lo usan las trece pantallas; lo
+ * que cambió es su aspecto: el prototipo no usa glassmorphism sino tarjetas
+ * blancas con sombra difusa. Renombrarla habría tocado 40 archivos sin
+ * cambiar nada de fondo.
+ */
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-borde);
+  border-radius: var(--panel-radio);
+  box-shadow: var(--panel-sombra);
+}
+
+@keyframes cwoPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(242, 106, 53, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(242, 106, 53, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,701 @@
+.container {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.btnPrimary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-primary);
+  color: var(--accent-contrast);
+  padding: 10px 20px;
+  border-radius: 11px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: opacity var(--transition-fast);
+}
+
+/* El aviso de entrega al SRI es un mensaje de éxito: usa los tokens de estado,
+   que ya son verdes en los dos temas. Se pierde el degradado del prototipo
+   porque un degradado de dos verdes claros fijos se vuelve una mancha sobre el
+   panel oscuro. */
+.badgeEntrega {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--success-soft);
+  border: 1px solid var(--success);
+  border-radius: 14px;
+  padding: 13px 18px;
+  font-size: 13.5px;
+  color: var(--success);
+  font-weight: 700;
+}
+
+.badgeIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* El glifo va del color del panel, no blanco fijo: sobre el verde claro del
+     tema oscuro el blanco no se leería. */
+  color: var(--panel-bg);
+  flex: 0 0 auto;
+}
+
+.tabsBar {
+  display: flex;
+  gap: 6px;
+  background: var(--panel-bg);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-borde);
+  box-shadow: var(--panel-sombra-suave);
+  flex-wrap: wrap;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 15px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+/* La pestaña activa invierte el panel —fondo del color del texto y texto del
+   color del panel—, que es lo que hacía el #0f1e33 sobre blanco del prototipo
+   y sigue contrastando cuando el panel es oscuro. */
+.tab[data-activo="true"] {
+  background: var(--text-primary);
+  color: var(--panel-bg);
+}
+
+.tabNum {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.tabNum[data-activo="true"] {
+  background: var(--accent-primary);
+  color: var(--accent-contrast);
+}
+
+.tabPanels { display: flex; flex-direction: column; gap: 16px; }
+
+.rucEmpresa {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.docHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.fedPill {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--accent-light);
+  /* No hay token de borde de acento, y --accent-light en oscuro ya es un
+     naranja translúcido que no se vería como línea: se deriva del acento con
+     alfa, que contrasta igual sobre fondo claro y oscuro. */
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 45%, transparent);
+  border-radius: 11px;
+  padding: 9px 16px;
+}
+
+.fedVal { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+
+.btnPrimary:hover {
+  opacity: 0.9;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnSecondary,
+.btnSecundarioCompacto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: 1px solid var(--glass-border);
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btnSecondary:hover,
+.btnSecundarioCompacto:hover {
+  background: var(--surface-2);
+}
+
+.btnIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btnIcon:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.btnQuitar {
+  margin-top: 12px;
+  font-size: 0.83rem;
+  color: var(--accent-primary);
+  font-weight: 500;
+}
+
+.btnQuitar:hover {
+  text-decoration: underline;
+}
+
+/* Banner de estado */
+.banner {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.93rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bannerInfo {
+  background: var(--info-soft);
+  border: 1px solid var(--info-border);
+  color: var(--info);
+}
+
+.bannerNeutro {
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+}
+
+.bannerAviso {
+  background: var(--warning-soft);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+}
+
+/* Layout */
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 24px;
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.sectionPanel {
+  padding: 24px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grupo label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-size: 0.93rem;
+  width: 100%;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  border-color: var(--accent-primary);
+}
+
+.input option {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Buscadores con resultados */
+.buscadorWrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.filaBuscador {
+  display: flex;
+  gap: 8px;
+}
+
+.buscadorCampo {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.buscadorIcono {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.buscadorCampo .input {
+  padding-left: 44px;
+}
+
+.resultados {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  list-style: none;
+  padding: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+.resultadoItem,
+.resultadoCliente {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-align: left;
+  color: var(--text-primary);
+  transition: background var(--transition-fast);
+}
+
+.resultadoItem {
+  grid-template-columns: 110px 1fr auto;
+}
+
+.resultadoCliente {
+  grid-template-columns: 1fr auto;
+}
+
+.resultadoItem:hover,
+.resultadoCliente:hover {
+  background: var(--accent-light);
+}
+
+.resultadoCodigo {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--accent-primary);
+}
+
+.resultadoNombre {
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultadoPrecio {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.sinResultados {
+  padding: 14px 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Receptor seleccionado */
+.clientePreview {
+  background: var(--field-bg);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.clienteFila {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.etiqueta {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.valor {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.92rem;
+  text-align: right;
+}
+
+/* Estados vacíos */
+.vacio,
+.vacioCompacto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.vacio {
+  padding: 48px 24px;
+}
+
+.vacioCompacto {
+  padding: 28px 24px;
+}
+
+.vacio p,
+.vacioCompacto p {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.vacio span {
+  font-size: 0.88rem;
+}
+
+/* Grilla de ítems */
+.gridWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.itemsTable th,
+.itemsTable td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.itemsTable th {
+  background: var(--field-bg);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.gridInput,
+.gridSelect {
+  background: var(--field-bg-strong);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 6px;
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+  font-size: 0.85rem;
+}
+
+.gridInputNumero {
+  text-align: right;
+}
+
+.gridSelect option {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.itemTotal {
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.itemDescuento {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--warning);
+}
+
+.btnDelete {
+  color: var(--error);
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.btnDelete:hover {
+  background: var(--error-soft);
+}
+
+/* Totales */
+.totalsPanel {
+  padding: 24px;
+  position: sticky;
+  top: 24px;
+}
+
+.totalsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.93rem;
+  color: var(--text-secondary);
+}
+
+.totalRow span:last-child {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.divider {
+  height: 1px;
+  background: var(--glass-border);
+  margin: 4px 0;
+}
+
+.totalRowGrand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.grandTotal {
+  font-size: 1.7rem;
+  color: var(--success);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.alertas {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--warning);
+}
+
+.alerta svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1100px) {
+  .mainLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .totalsPanel {
+    position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filaBuscador {
+    flex-wrap: wrap;
+  }
+
+  .resultadoItem {
+    grid-template-columns: 1fr auto;
+  }
+
+  .resultadoCodigo {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 4px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .grandTotal {
+    font-size: 1.4rem;
+  }
+}
+
+/* Estado del guardado */
+.girando {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.exito {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  background: var(--success-soft);
+  border: 1px solid var(--success);
+  color: var(--success);
+  font-size: 0.93rem;
+}
+
+.exito svg {
+  flex-shrink: 0;
+}
+
+.errorGuardado {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  background: var(--error-soft);
+  border: 1px solid var(--error);
+  color: var(--error);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.errorGuardado svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.btnSecondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

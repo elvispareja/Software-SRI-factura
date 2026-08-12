@@ -1,0 +1,59 @@
+# Fase 3-A — Postgres + API + Web
+# Levanta todo con: docker compose up --build
+# Requiere .env en la raíz (copia .env.example y completa CLAVE_SECRETA en prod).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-factoa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-factoa}
+      POSTGRES_DB: ${POSTGRES_DB:-factoa}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-factoa} -d ${POSTGRES_DB:-factoa}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      URL_BASE_DATOS: postgresql+psycopg://${POSTGRES_USER:-factoa}:${POSTGRES_PASSWORD:-factoa}@db:5432/${POSTGRES_DB:-factoa}
+      CLAVE_SECRETA: ${CLAVE_SECRETA:-desarrollo-no-usar-en-produccion}
+      ORIGENES_PERMITIDOS: ${ORIGENES_PERMITIDOS:-http://localhost:5173,http://localhost:3000}
+      AMBIENTE: ${AMBIENTE:-1}
+      COOKIE_SEGURA: ${COOKIE_SEGURA:-false}
+      COOKIE_SAMESITE: ${COOKIE_SAMESITE:-lax}
+      HORAS_VIGENCIA_TOKEN: ${HORAS_VIGENCIA_TOKEN:-12}
+      WHATSAPP_SECRETO_APP: ${WHATSAPP_SECRETO_APP:-}
+      WHATSAPP_TOKEN_ACCESO: ${WHATSAPP_TOKEN_ACCESO:-}
+      WHATSAPP_ID_NUMERO: ${WHATSAPP_ID_NUMERO:-}
+      WHATSAPP_TOKEN_VERIFICACION: ${WHATSAPP_TOKEN_VERIFICACION:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    # El backend crea las tablas al arrancar (base_datos.crear_tablas)
+    command: uvicorn app.main:aplicacion --host 0.0.0.0 --port 8000
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_URL_API: ${VITE_URL_API:-http://localhost:8000/api}
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:

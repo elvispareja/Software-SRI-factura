@@ -1,0 +1,180 @@
+/*
+ * Celdas del listado de comprobantes.
+ *
+ * Antes cada celda se pintaba con `style` en línea y colores hexadecimales
+ * fijos. Eso rompía el tema oscuro de forma visible: el nombre del receptor y
+ * los totales se escribían en #0f1e33 sobre un panel que en oscuro vale
+ * #111f37, así que el texto desaparecía. Todo pasa ahora por los tokens de
+ * index.css, que es lo único que se resuelve distinto en cada tema.
+ *
+ * Los listados de retenciones y liquidaciones son esta misma tabla con otras
+ * columnas, así que importan estas clases en lugar de duplicarlas.
+ */
+
+.numero {
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+.celdaSuave {
+  color: var(--text-secondary);
+}
+
+.celdaTenue {
+  color: var(--text-muted);
+}
+
+/* ---- Receptor ---- */
+
+.receptor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 11px;
+  flex: 0 0 auto;
+}
+
+.receptorDatos {
+  min-width: 0;
+}
+
+.receptorNombre {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+}
+
+.receptorIdentificacion {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+}
+
+.total {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ---- Chips de estado ----
+ *
+ * El significado (verde autorizado, ámbar pendiente, rojo rechazado) lo llevan
+ * los tokens de estado, no un hexadecimal: --success y compañía ya son verde,
+ * ámbar y rojo en los dos temas, así que el color mantiene su lectura sin
+ * quedarse congelado en la paleta clara.
+ */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chipExito {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.chipAviso {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.chipError {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.chipNeutro {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+/* ---- Acciones ---- */
+
+.acciones {
+  white-space: nowrap;
+}
+
+.btnVer {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-primary);
+  padding: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+}
+
+.btnMas {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 6px;
+  border-radius: 8px;
+  display: inline-flex;
+}
+
+/* ---- Botonera de la cabecera ---- */
+
+.btnNuevo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent-primary);
+  color: var(--accent-contrast);
+  border-radius: 11px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.btnAlterno {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--panel-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--field-borde);
+  border-radius: 11px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ---- Pie con el acumulado (lo usa el listado de retenciones) ---- */
+
+.pieTotal {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.pieTotal strong {
+  color: var(--text-primary);
+}

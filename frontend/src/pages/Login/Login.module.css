@@ -1,0 +1,247 @@
+.pantalla {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-image:
+    radial-gradient(circle at 20% 25%, var(--halo-accent), transparent 30%),
+    radial-gradient(circle at 80% 70%, var(--halo-info), transparent 30%);
+}
+
+.esquina {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 32px;
+  border-radius: 18px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.marcaIcono {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: var(--accent-light);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.marcaNombre {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.marcaNombre span {
+  color: var(--accent-primary);
+}
+
+.marcaLema {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.titulo {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.grupo label {
+  font-size: 0.87rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 9px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 0.94rem;
+  width: 100%;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  border-color: var(--accent-primary);
+}
+
+.inputError {
+  border-color: var(--error);
+}
+
+.ayuda,
+.ayudaError {
+  font-size: 0.78rem;
+}
+
+.ayuda {
+  color: var(--text-muted);
+}
+
+.ayudaError {
+  color: var(--error);
+}
+
+.aviso {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  background: var(--info-soft);
+  border: 1px solid var(--info-border);
+  padding: 10px 12px;
+  border-radius: 8px;
+  line-height: 1.45;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--error);
+  background: var(--error-soft);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.error svg {
+  flex-shrink: 0;
+}
+
+.sinServidor {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  border: 1px solid var(--warning);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.sinServidor svg {
+  color: var(--warning);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.sinServidor strong {
+  color: var(--warning);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sinServidor code {
+  font-family: monospace;
+  font-size: 0.82rem;
+  background: var(--surface-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.btnDemo {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  transition: background var(--transition-fast);
+}
+
+.btnDemo:hover {
+  background: var(--warning-soft);
+}
+
+.btnPrincipal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 4px;
+  padding: 13px 20px;
+  border-radius: 9px;
+  font-weight: 600;
+  font-size: 0.94rem;
+  color: white;
+  background: var(--accent-primary);
+  transition: background var(--transition-fast);
+}
+
+.btnPrincipal:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btnPrincipal:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.girando {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btnCambiarModo {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--glass-border);
+  font-size: 0.86rem;
+  color: var(--accent-primary);
+  font-weight: 500;
+}
+
+.btnCambiarModo:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .pantalla {
+    padding: 12px;
+  }
+
+  .tarjeta {
+    padding: 26px 20px;
+  }
+}

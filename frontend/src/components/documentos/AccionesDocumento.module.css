@@ -1,0 +1,175 @@
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.botones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.boton,
+.botonPrimario {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+
+.boton {
+  color: var(--text-secondary);
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+}
+
+.boton:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.botonPrimario {
+  color: white;
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+}
+
+.botonPrimario:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.boton:disabled,
+.botonPrimario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.girando {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.autorizacion {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--success);
+  background: var(--success-soft);
+  padding: 4px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.mensajes,
+.mensajesError {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  max-width: 420px;
+}
+
+.mensajes {
+  background: var(--warning-soft);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+}
+
+.mensajesError {
+  background: var(--error-soft);
+  border: 1px solid var(--error);
+  color: var(--error);
+}
+
+
+/* ---- Diálogo de cuotas ---- */
+.fondoDialogo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 20, 36, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.dialogo {
+  width: 100%;
+  max-width: 400px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-borde);
+  border-radius: 18px;
+  box-shadow: var(--panel-sombra);
+  overflow: hidden;
+}
+
+.dialogoCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--panel-borde);
+  color: var(--text-primary);
+}
+
+.dialogoCuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+}
+
+.dialogoCuerpo label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.dialogoCuerpo input {
+  background: var(--field-bg);
+  border: 1px solid var(--field-borde);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.dialogoCuerpo input:focus {
+  border-color: var(--accent-primary);
+}
+
+.ayudaDialogo {
+  margin-top: 12px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.dialogoPie {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--panel-borde);
+}

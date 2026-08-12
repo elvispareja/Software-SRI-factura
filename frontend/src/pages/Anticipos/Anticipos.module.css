@@ -1,0 +1,110 @@
+/**
+ * Anticipos.
+ *
+ * La hoja se escribió con los colores del prototipo literales, antes de que
+ * existieran los tokens: la pantalla entera era clara pasara lo que pasara con
+ * el tema. Aquí todo pasa por `index.css`, y las combinaciones que el JSX
+ * elegía en línea (recibido / pagado, chip por estado) viven ahora en clases.
+ */
+
+.page { display: flex; flex-direction: column; gap: 16px; padding: 12px; }
+.bannerDev { display: flex; gap: 12px; background: var(--accent-light); border-left: 3px solid var(--accent-primary); border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.bannerDev strong { color: var(--text-primary); }
+.bannerDev code { background: var(--panel-bg); border: 1px solid var(--field-borde); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+.card { background: var(--panel-bg); border: 1px solid var(--panel-borde); border-radius: 14px; box-shadow: var(--panel-sombra); padding: 16px 18px; }
+.filtrosGrid { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+.fieldSelect, .fieldDate { display: flex; flex-direction: column; gap: 4px; flex: 1 1 180px; min-width: 160px; }
+.fieldLabel { font-size: 12.5px; color: var(--text-secondary); }
+.select, .input { padding: 10px 12px; border: 1px solid var(--field-borde); border-radius: 8px; font-size: 13.5px; background: var(--field-bg); color: var(--text-primary); }
+.select:focus, .input:focus, .searchInput:focus { outline: none; border-color: var(--accent-primary); }
+.searchWrap { position: relative; flex: 1 1 200px; min-width: 160px; align-self: flex-end; }
+.searchIcon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+.searchInput { width: 100%; padding: 10px 12px 10px 33px; border: 1px solid var(--field-borde); border-radius: 8px; font-size: 13.5px; background: var(--field-bg); color: var(--text-primary); }
+.toolbar2 { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+.toolbarLabel { font-size: 13.5px; color: var(--text-secondary); }
+.selectSm { padding: 8px 10px; border: 1px solid var(--field-borde); border-radius: 8px; font-size: 13.5px; background: var(--field-bg); color: var(--text-primary); }
+.btnPrimario { display: inline-flex; align-items: center; gap: 7px; background: var(--accent-primary); color: var(--accent-contrast); border: none; border-radius: 9px; padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px rgba(242, 106, 53, 0.32); }
+.btnPrimario:hover { background: var(--accent-hover); }
+.btnSecundario { display: inline-flex; align-items: center; gap: 7px; background: var(--panel-bg); color: var(--text-secondary); border: 1px solid var(--field-borde); border-radius: 7px; padding: 10px 14px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.infoBox { display: flex; gap: 14px; background: var(--surface-1); border-radius: 10px; padding: 16px 18px; }
+/* El cuadrado del icono lleva el azul de marca, no --info: --info se aclara en
+   el tema oscuro y el icono que va dentro es blanco. */
+.infoIcon { width: 30px; height: 30px; border-radius: 8px; background: var(--marca-fin); color: var(--accent-contrast); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.infoText { flex: 1; font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.infoList { margin: 2px 0 0; padding-left: 20px; }
+.cardTable { background: var(--panel-bg); border: 1px solid var(--panel-borde); border-radius: 14px; box-shadow: var(--panel-sombra); overflow: hidden; }
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; min-width: 980px; }
+.table th { text-align: left; padding: 12px 14px; font-size: 11.5px; font-weight: 700; color: var(--text-muted); letter-spacing: .4px; border-bottom: 1px solid var(--field-borde); white-space: nowrap; }
+.table td { padding: 11px 14px; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--panel-borde); }
+.cellStrong { font-weight: 600; color: var(--text-primary); }
+.cellMuted { color: var(--text-muted); font-weight: 700; }
+.cellAsiento { color: var(--info); font-weight: 700; font-size: 12.5px; }
+.emptyCell { text-align: center; padding: 26px 14px; color: var(--text-muted); }
+.chipTipo { display: inline-block; padding: 5px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 800; }
+/* ARD (dinero que entra) y APP (dinero que sale) se separan por color; los dos
+   pares vienen del sistema, así que el contraste se mantiene en ambos temas. */
+.chipARD { background: var(--accent-light); color: var(--accent-primary); }
+.chipAPP { background: var(--info-soft); color: var(--info); }
+.chipEstado { display: inline-block; padding: 5px 11px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+.chipPendiente { background: var(--warning-soft); color: var(--warning); }
+.chipAplicado { background: var(--success-soft); color: var(--success); }
+.chipAnulado { background: var(--surface-1); color: var(--text-muted); }
+.chipResiduo { background: var(--info-soft); color: var(--info); }
+.chipDevuelto { background: var(--violeta-soft); color: var(--violeta); }
+.accionesCell { display: flex; gap: 4px; justify-content: center; }
+.btnAccion { width: 30px; height: 30px; border: 1px solid var(--field-borde); border-radius: 8px; background: var(--panel-bg); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btnAccion:hover { background: var(--surface-1); }
+.paginacion { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--surface-0); border-top: 1px solid var(--field-borde); }
+.pagInfo { font-size: 13px; color: var(--text-muted); }
+.pagBtns { display: flex; align-items: center; gap: 6px; }
+.pagBtn { padding: 6px 11px; border-radius: 8px; font-size: 13px; border: 1px solid var(--field-borde); background: var(--panel-bg); color: var(--text-primary); cursor: pointer; }
+.pagBtn:disabled { color: var(--text-muted); background: var(--surface-1); cursor: not-allowed; }
+.pagNum { padding: 6px 11px; border-radius: 8px; font-size: 13px; font-weight: 700; background: var(--accent-light); color: var(--accent-primary); border: 1px solid var(--accent-primary); }
+.overlay { position: fixed; inset: 0; z-index: 80; background: rgba(15, 30, 51, .45); backdrop-filter: blur(6px); display: flex; align-items: flex-start; justify-content: center; padding: 34px 16px; overflow-y: auto; }
+.modal { position: relative; width: 100%; max-width: 660px; background: var(--panel-bg); border-radius: 12px; box-shadow: var(--panel-sombra); overflow: visible; }
+.modalClose { position: absolute; top: -12px; right: -12px; width: 32px; height: 32px; border-radius: 50%; background: var(--panel-bg); color: var(--text-primary); border: 1px solid var(--field-borde); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--panel-sombra-suave); }
+.modalHead { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: 12px 12px 0 0; }
+/* Cabecera del modal: naranja si el dinero entra, azul si sale. */
+.modalHeadRec { background: var(--accent-light); }
+.modalHeadPag { background: var(--info-soft); }
+.modalIcon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; color: var(--accent-contrast); }
+.modalIconRec { background: var(--accent-primary); }
+.modalIconPag { background: var(--marca-fin); }
+.modalTitle { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+.modalSub { font-size: 13px; margin-top: 1px; color: var(--text-secondary); }
+.modalBody { padding: 16px 20px 18px; }
+.kindGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.kindCard { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-radius: 9px; cursor: pointer; background: var(--panel-bg); border: 1px solid var(--field-borde); transition: .16s; text-align: left; color: var(--text-primary); }
+.kindActivoRec { background: var(--accent-light); border-color: var(--accent-primary); }
+.kindActivoPag { background: var(--surface-2); border-color: var(--field-borde); }
+.kindLabel { font-size: 13.5px; font-weight: 700; color: var(--text-primary); }
+.kindSub { font-size: 12px; color: var(--text-muted); }
+.kindCheck { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; background: var(--accent-primary); color: var(--accent-contrast); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.modalGrid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; position: relative; }
+.field span { font-size: 12.5px; color: var(--text-secondary); }
+.input, .textarea { padding: 10px 12px; border: 1px solid var(--field-borde); border-radius: 8px; font-size: 13.5px; background: var(--field-bg); color: var(--text-primary); }
+.textarea { resize: vertical; }
+.selectBox { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--field-borde); border-radius: 8px; background: var(--field-bg); cursor: pointer; }
+.selectValue { font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); }
+/* Sin receptor elegido el texto es un marcador de posición, no un valor. */
+.selectValueVacio { color: var(--text-muted); }
+.chevron { color: var(--text-muted); }
+.dropdown { background: var(--panel-bg); border: 1px solid var(--field-borde); border-radius: 8px; box-shadow: var(--panel-sombra); padding: 6px 0; max-height: 220px; overflow-y: auto; margin-top: 6px; }
+.dropdownItem { width: 100%; text-align: left; padding: 9px 16px; font-size: 13.5px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); }
+.dropdownItem:hover { background: var(--surface-1); }
+.pagosHead { display: flex; align-items: center; gap: 8px; margin: 12px 0 8px; font-size: 12px; font-weight: 700; color: var(--accent-primary); letter-spacing: .4px; }
+.payAddBox { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--field-borde); border-radius: 8px; background: var(--field-bg); cursor: pointer; font-size: 13.5px; color: var(--text-muted); }
+.pagoRow { display: flex; align-items: center; gap: 10px; border: 1px solid var(--field-borde); border-radius: 9px; padding: 10px 12px; margin-top: 8px; }
+.pagoLabel { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.inputSm { width: 110px; padding: 8px 10px; border: 1px solid var(--field-borde); border-radius: 8px; font-size: 13.5px; text-align: right; background: var(--field-bg); color: var(--text-primary); }
+.btnTrash { width: 30px; height: 30px; border: none; border-radius: 8px; background: var(--error-soft); color: var(--error); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+/* El icono del calendario hereda este color; lucide lo pinta como atributo del
+   SVG y ahí var() no resuelve. */
+.montoBox { display: flex; align-items: center; justify-content: space-between; border-radius: 9px; padding: 14px 16px; margin: 12px 0 16px; color: var(--text-muted); }
+.montoBoxRec { background: var(--accent-light); }
+.montoBoxPag { background: var(--surface-1); }
+.montoLabel { font-size: 11.5px; font-weight: 700; color: var(--text-muted); letter-spacing: .5px; }
+.montoVal { font-size: 21px; font-weight: 800; margin-top: 2px; color: var(--text-primary); }
+.modalActions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 14px; }

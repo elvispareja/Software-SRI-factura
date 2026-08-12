@@ -1,0 +1,125 @@
+/*
+ * El listado de retenciones es estructuralmente el mismo que el de guías:
+ * cabecera, barra de filtros y tabla. En lugar de repetir doscientas líneas
+ * se componen las de allí y aquí quedan solo las diferencias — la columna de
+ * importe y la etiqueta de período.
+ */
+
+.container {
+  composes: container from '../Guias/GuiasList.module.css';
+}
+.header {
+  composes: header from '../Guias/GuiasList.module.css';
+}
+.title {
+  composes: title from '../Guias/GuiasList.module.css';
+}
+.subtitle {
+  composes: subtitle from '../Guias/GuiasList.module.css';
+}
+.btnPrimary {
+  composes: btnPrimary from '../Guias/GuiasList.module.css';
+}
+.tableContainer {
+  composes: tableContainer from '../Guias/GuiasList.module.css';
+}
+.toolbar {
+  composes: toolbar from '../Guias/GuiasList.module.css';
+}
+.searchWrapper {
+  composes: searchWrapper from '../Guias/GuiasList.module.css';
+}
+.searchIcon {
+  composes: searchIcon from '../Guias/GuiasList.module.css';
+}
+.searchInput {
+  composes: searchInput from '../Guias/GuiasList.module.css';
+}
+.tableWrapper {
+  composes: tableWrapper from '../Guias/GuiasList.module.css';
+}
+.table {
+  composes: table from '../Guias/GuiasList.module.css';
+}
+.docWrapper {
+  composes: docWrapper from '../Guias/GuiasList.module.css';
+}
+.docNumber {
+  composes: docNumber from '../Guias/GuiasList.module.css';
+}
+.mainText {
+  composes: mainText from '../Guias/GuiasList.module.css';
+}
+.textMuted {
+  composes: textMuted from '../Guias/GuiasList.module.css';
+}
+.statusBadge {
+  composes: statusBadge from '../Guias/GuiasList.module.css';
+}
+.estadosuccess {
+  composes: estadosuccess from '../Guias/GuiasList.module.css';
+}
+.estadowarning {
+  composes: estadowarning from '../Guias/GuiasList.module.css';
+}
+.estadoerror {
+  composes: estadoerror from '../Guias/GuiasList.module.css';
+}
+.estadoneutral {
+  composes: estadoneutral from '../Guias/GuiasList.module.css';
+}
+.filtros {
+  composes: filtros from '../../styles/tabla.module.css';
+}
+.filtroSelect {
+  composes: filtroSelect from '../../styles/tabla.module.css';
+}
+.btnLimpiar {
+  composes: btnLimpiar from '../../styles/tabla.module.css';
+}
+.sinCoincidencias {
+  composes: sinCoincidencias from '../../styles/tabla.module.css';
+}
+
+/* ---- Propio de las retenciones ---- */
+
+.importe {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.periodo {
+  font-family: monospace;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.sustento {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.totalPie {
+  padding: 14px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: baseline;
+  border-top: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.totalPie strong {
+  font-family: monospace;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}

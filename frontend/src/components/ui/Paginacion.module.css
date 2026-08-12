@@ -1,0 +1,73 @@
+.contenedor {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--glass-border);
+}
+
+.info {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.controles {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.selectTamano {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.selectTamano option {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.navegacion {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.botonPagina {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  background: var(--surface-1);
+  transition: background var(--transition-fast);
+}
+
+.botonPagina:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.botonPagina:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.indicador {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  min-width: 56px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

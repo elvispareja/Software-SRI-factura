@@ -1,0 +1,1020 @@
+.container {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.btnPrimary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background var(--transition-fast);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+}
+
+.btnSecondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: 1px solid var(--glass-border);
+  transition: background var(--transition-fast);
+}
+
+.btnSecondary:hover {
+  background: var(--surface-2);
+}
+
+.btnIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-fast);
+}
+
+.btnIcon:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+/* Table Styles - List */
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  width: 350px;
+}
+
+.searchIcon {
+  color: var(--text-muted);
+  margin-right: 12px;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+}
+
+.btnFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.btnFilter:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 16px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tbody tr:hover {
+  background: var(--surface-0);
+}
+
+.codigo {
+  font-weight: 600;
+  color: var(--accent-primary);
+  font-family: monospace;
+  font-size: 0.95rem;
+  background: var(--accent-light);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.mainText {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.tipoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+.iconProd {
+  color: var(--info);
+}
+
+.iconServ {
+  color: var(--warning);
+}
+
+.price {
+  font-weight: 700;
+  color: var(--success);
+  font-size: 1.05rem;
+}
+
+.stockGood {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.stockWarning {
+  color: var(--warning);
+  font-weight: 500;
+}
+
+.textMuted {
+  color: var(--text-muted);
+}
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.statusActive {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* Filtros, estado vacío y badges compartidos con los demás listados */
+.filtros {
+  composes: filtros from '../../styles/tabla.module.css';
+}
+.filtroSelect {
+  composes: filtroSelect from '../../styles/tabla.module.css';
+}
+.btnLimpiar {
+  composes: btnLimpiar from '../../styles/tabla.module.css';
+}
+.sinCoincidencias {
+  composes: sinCoincidencias from '../../styles/tabla.module.css';
+}
+.statusInactive {
+  composes: statusInactive from '../../styles/tabla.module.css';
+}
+
+/* Form Styles */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.tabsContainer {
+  display: flex;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--glass-border);
+  gap: 32px;
+}
+
+.tab {
+  padding: 20px 0;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tabActive {
+  color: var(--accent-primary);
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-primary);
+  border-radius: 2px 2px 0 0;
+}
+
+.tabContent {
+  padding: 32px 24px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroupFull {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label, .formGroupFull label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent-primary);
+}
+
+/* Product/Service Switch */
+.typeSelectorWrapper {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.typeBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--field-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.typeBtnActive {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Pricing Grid */
+.pricingGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.costSection {
+  background: var(--surface-0);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+}
+
+.inputLarge {
+  background: var(--field-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  color: var(--success);
+  font-size: 1.5rem;
+  font-weight: 700;
+  width: 250px;
+  outline: none;
+}
+
+.helpText {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.pricesTableWrapper h4 {
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.pricesTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pricesTable th, .pricesTable td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.pricesTable th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.levelName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.inputWithIcon {
+  display: flex;
+  align-items: center;
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 0 12px;
+  width: 100px;
+}
+
+.inputWithIcon svg {
+  color: var(--text-muted);
+}
+
+.inputSmall {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 8px 0;
+  width: 100%;
+  outline: none;
+  font-weight: 600;
+}
+
+.inputMedium {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  color: var(--success);
+  padding: 8px 12px;
+  width: 140px;
+  font-weight: 600;
+  outline: none;
+}
+
+.badgePrimary {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchWrapper {
+    width: 100%;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 4px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+}
+
+/* ---- Formulario de artículo ---- */
+.ayuda {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.ayuda code {
+  font-family: monospace;
+  color: var(--text-secondary);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.avisoInfo,
+.avisoAlerta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.avisoInfo {
+  background: var(--info-soft);
+  border: 1px solid var(--info-border);
+  color: var(--text-secondary);
+}
+
+.avisoInfo svg {
+  color: var(--info);
+  flex-shrink: 0;
+}
+
+.avisoAlerta {
+  background: var(--warning-soft);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+  margin-bottom: 18px;
+}
+
+.avisoAlerta svg {
+  flex-shrink: 0;
+}
+
+/* Costos */
+.bloqueCostos {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
+.selectorBase {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.opcionBase {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-fast);
+}
+
+.opcionBase:hover {
+  color: var(--text-primary);
+}
+
+.opcionBaseActiva {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Grilla de precios */
+.tablaWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+}
+
+.precioFinal {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.gananciaBuena {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.gananciaMala {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.origen {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.levelName {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Inventario */
+.bloqueInventario {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.bloqueInventario h4 {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.gridInventario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.semaforo {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.stockAgotado {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.stockCritico {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.stockReorden {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.stockOk {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+@media (max-width: 900px) {
+  .bloqueCostos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Banner de error al guardar: mismo par de tokens que usa `.stockAgotado`,
+   para que un fallo se vea igual en toda la pantalla. */
+.avisoError {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--error-soft);
+  border: 1px solid var(--error);
+  color: var(--error);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* ---- Listado de artículos ----
+ *
+ * Estos estilos estaban escritos como hex literales dentro del JSX, así que no
+ * seguían el cambio de tema. El caso peor: el nombre del artículo se pintaba en
+ * #0f1e33 sobre el panel #111f37 del tema oscuro, o sea texto invisible. Al
+ * pasar por tokens el mismo marcado vale para claro y oscuro.
+ */
+.celdaNombre {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex: 0 0 auto;
+  line-height: 1.05;
+  text-align: center;
+}
+
+/* El tinte del avatar es decoración, no dato: se reparte por hash del nombre.
+   Cada pareja es fondo suave + texto del mismo token, que es lo que garantiza
+   el contraste en los dos temas. */
+.avatarNeutro {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.avatarAcento {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+.avatarInfo {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.avatarExito {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.avatarAviso {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.nombreArticulo {
+  min-width: 0;
+  max-width: 260px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.codigoCelda {
+  font-weight: 600;
+}
+
+.chip {
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chipNeutro {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.chipAcento {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+.chipGravamen {
+  font-weight: 600;
+}
+
+/* Activo/Inactivo sí es dato, pero verde y rojo ya son tokens de estado del
+   sistema y cambian de tono con el tema sin perder el significado. */
+.pildora {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pildoraExito {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.pildoraError {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.celdaAcciones {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.envoltorioMenu {
+  position: relative;
+  display: inline-flex;
+}
+
+.btnIconoTabla {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 7px;
+  border-radius: 8px;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.btnIconoTabla:hover {
+  color: var(--text-primary);
+  background: var(--surface-1);
+}
+
+.capaCierre {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.menuAcciones {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 41;
+  background: var(--panel-bg);
+  border: 1px solid var(--field-borde);
+  border-radius: 10px;
+  box-shadow: var(--panel-sombra);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 160px;
+}
+
+.menuOpcion {
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.menuOpcion:hover {
+  background: var(--surface-1);
+}
+
+.menuOpcionPeligro {
+  color: var(--error);
+}
+
+.menuOpcion:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* El halo naranja del botón principal se queda en rgba del naranja de marca:
+   `--accent-primary` vale #f26a35 en los dos temas, así que no hay nada que
+   alternar, y no existe token de sombra de acento. */
+.btnNuevo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent-primary);
+  color: var(--accent-contrast);
+  border: none;
+  border-radius: 11px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(242, 106, 53, 0.26);
+  text-decoration: none;
+}
+
+.btnColumnas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: 11px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.totalPie {
+  color: var(--text-primary);
+}
+
+/* Panel flotante de columnas visibles */
+.capaCierrePanel {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+}
+
+.panelColumnas {
+  position: fixed;
+  top: 150px;
+  right: 28px;
+  z-index: 66;
+  background: var(--panel-bg);
+  border: 1px solid var(--field-borde);
+  border-radius: 16px;
+  box-shadow: var(--panel-sombra);
+  padding: 16px;
+  width: 288px;
+  max-width: calc(100vw - 40px);
+}
+
+.panelColumnasCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.panelColumnasTitulo {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.btnCerrarPanel {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  padding: 2px;
+}
+
+.btnCerrarPanel:hover {
+  color: var(--text-primary);
+}
+
+.panelColumnasNota {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.listaColumnas {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.filaColumna {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.filaColumna:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.interruptor {
+  width: 38px;
+  height: 22px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  position: relative;
+  flex: 0 0 auto;
+  transition: background var(--transition-fast);
+}
+
+.interruptorActivo {
+  background: var(--accent-primary);
+}
+
+.interruptorBolita {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-contrast);
+  transition: left var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.interruptorActivo .interruptorBolita {
+  left: 19px;
+}

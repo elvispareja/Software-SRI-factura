@@ -1,0 +1,179 @@
+/*
+ * El formulario de retención tiene la misma anatomía que el de guía de
+ * remisión —paneles numerados, buscador con desplegable, columna lateral de
+ * resumen—, así que hereda su hoja y solo define lo suyo: la tabla de líneas
+ * de retención y el total.
+ */
+
+.container {
+  composes: container from '../Guias/Guias.module.css';
+}
+.header {
+  composes: header from '../Guias/Guias.module.css';
+}
+.headerTitleGroup {
+  composes: headerTitleGroup from '../Guias/Guias.module.css';
+}
+.title {
+  composes: title from '../Guias/Guias.module.css';
+}
+.subtitle {
+  composes: subtitle from '../Guias/Guias.module.css';
+}
+.headerActions {
+  composes: headerActions from '../Guias/Guias.module.css';
+}
+.btnPrimary {
+  composes: btnPrimary from '../Guias/Guias.module.css';
+}
+.btnSecondary {
+  composes: btnSecondary from '../Guias/Guias.module.css';
+}
+.btnIcon {
+  composes: btnIcon from '../Guias/Guias.module.css';
+}
+.banner {
+  composes: banner from '../Guias/Guias.module.css';
+}
+.layout {
+  composes: layout from '../Guias/Guias.module.css';
+}
+.columna {
+  composes: columna from '../Guias/Guias.module.css';
+}
+.panel {
+  composes: panel from '../Guias/Guias.module.css';
+}
+.panelResumen {
+  composes: panelResumen from '../Guias/Guias.module.css';
+}
+.panelTitulo {
+  composes: panelTitulo from '../Guias/Guias.module.css';
+}
+.grid {
+  composes: grid from '../Guias/Guias.module.css';
+}
+.grupo {
+  composes: grupo from '../Guias/Guias.module.css';
+}
+.grupoAncho {
+  composes: grupoAncho from '../Guias/Guias.module.css';
+}
+.input {
+  composes: input from '../Guias/Guias.module.css';
+}
+.inputMini {
+  composes: inputMini from '../Guias/Guias.module.css';
+}
+.buscadorWrapper {
+  composes: buscadorWrapper from '../Guias/Guias.module.css';
+}
+.buscadorCampo {
+  composes: buscadorCampo from '../Guias/Guias.module.css';
+}
+.buscadorIcono {
+  composes: buscadorIcono from '../Guias/Guias.module.css';
+}
+.resultados {
+  composes: resultados from '../Guias/Guias.module.css';
+}
+.resultado {
+  composes: resultado from '../Guias/Guias.module.css';
+}
+.resultadoId {
+  composes: resultadoId from '../Guias/Guias.module.css';
+}
+.sinResultados {
+  composes: sinResultados from '../Guias/Guias.module.css';
+}
+.tarjetaProveedor {
+  composes: tarjetaTransportista from '../Guias/Guias.module.css';
+}
+.btnQuitar {
+  composes: btnQuitar from '../Guias/Guias.module.css';
+}
+.aviso {
+  composes: aviso from '../Guias/Guias.module.css';
+}
+.vacio {
+  composes: vacio from '../Guias/Guias.module.css';
+}
+.tabla {
+  composes: tabla from '../Guias/Guias.module.css';
+}
+.btnEliminar {
+  composes: btnEliminar from '../Guias/Guias.module.css';
+}
+.btnLinea {
+  composes: btnLinea from '../Guias/Guias.module.css';
+}
+.resumenLinea {
+  composes: resumenLinea from '../Guias/Guias.module.css';
+}
+.alertas {
+  composes: alertas from '../Guias/Guias.module.css';
+}
+.alerta {
+  composes: alerta from '../Guias/Guias.module.css';
+}
+.listo {
+  composes: listo from '../Guias/Guias.module.css';
+}
+.girando {
+  composes: girando from '../Guias/Guias.module.css';
+}
+.exito {
+  composes: exito from '../Guias/Guias.module.css';
+}
+.errorGuardado {
+  composes: errorGuardado from '../Guias/Guias.module.css';
+}
+
+/* ---- Propio de las retenciones ---- */
+
+.valorRetenido {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--accent-primary);
+  white-space: nowrap;
+}
+
+.totalRetenido {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+}
+
+.totalRetenido strong {
+  font-family: monospace;
+  font-size: 1.4rem;
+  color: var(--text-primary);
+}
+
+.selectConcepto {
+  composes: input from '../Guias/Guias.module.css';
+  min-width: 160px;
+}
+
+/* Aparece cuando el concepto elegido no trae código de la ficha técnica. */
+.avisoCodigo {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--warning);
+}
+
+/* La nota del catálogo: los porcentajes cambian por resolución del SRI. */
+.notaCatalogo {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}

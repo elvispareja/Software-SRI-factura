@@ -1,0 +1,33 @@
+# API
+fastapi==0.141.1
+uvicorn[standard]==0.37.0
+# >=2.12.5 porque google-genai lo exige; sin el mínimo, pip resuelve un par
+# incompatible y la instalación falla antes de llegar a nada más.
+pydantic[email]>=2.12.5
+python-multipart==0.0.20
+sqlalchemy==2.0.51
+# >=3.2.2 porque no hay wheel de 3.1.13 para Python 3.13+; con 3.13 sale un
+# error de compilación de psycopg2, no un mensaje sobre versiones.
+psycopg[binary]>=3.2.2
+
+# Motor SRI
+lxml==6.1.1
+cryptography==50.0.0
+requests==2.32.5
+reportlab==4.4.4
+
+# Asistente de IA
+# Tres proveedores a propósito, cada uno en lo que hace mejor: Gemini extrae
+# los datos de facturación (app/ia/extraccion.py), Anthropic hace el OCR de
+# las imágenes de WhatsApp y OpenAI transcribe los audios (los dos en
+# app/routers/whatsapp.py). Sin OPENAI_API_KEY, el audio cae al fallback
+# local (faster-whisper, no instalado por defecto) o a "no configurado" —
+# nunca rompe el webhook.
+google-genai==2.17.0
+anthropic==0.121.0
+openai==1.109.1
+
+# Pruebas
+pytest==8.4.2
+httpx==0.28.1
+pypdf==6.15.0

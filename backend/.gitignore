@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# NUNCA versionar certificados ni sus contraseñas
+certificados/
+*.p12
+*.pfx
+
+# XML generados en pruebas: contienen datos del emisor
+salida/

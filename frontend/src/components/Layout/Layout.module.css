@@ -1,0 +1,746 @@
+/**
+ * Layout — Cloud Factur AI (Cloud World Office.dc.html).
+ *
+ * Sidebar oscuro 264px / colapsado 76px, header glass sticky,
+ * sub-navs colapsables, footer SRI, overlay móvil.
+ */
+
+.container {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(10, 20, 36, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 264px;
+  flex: 0 0 264px;
+  padding: 16px 12px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--lateral-fondo);
+  color: var(--lateral-texto);
+  z-index: 50;
+  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+}
+
+.sidebarColapsado {
+  width: 76px;
+  flex: 0 0 76px;
+}
+
+.sidebarMovil {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translateX(-110%);
+  transition: transform var(--transition-normal);
+}
+
+.sidebarMovilAbierto {
+  transform: translateX(0);
+}
+
+/* ---- Marca ---- */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 14px;
+}
+
+.botonMenuLateral {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: var(--lateral-texto);
+  background: transparent;
+  flex-shrink: 0;
+  border-radius: 8px;
+  transition: background var(--transition-fast);
+}
+
+.botonMenuLateral:hover {
+  background: var(--lateral-hover);
+}
+
+.logoMarca {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.logoIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--marca-inicio), var(--marca-fin));
+  box-shadow: 0 6px 16px rgba(31, 111, 208, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.logoTexto {
+  line-height: 1.05;
+  min-width: 0;
+}
+
+.logoSuperior {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--lateral-texto-suave);
+  font-weight: 700;
+}
+
+.logoNombre {
+  font-size: 19px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.logoNombre em {
+  font-style: normal;
+  color: var(--marca-brillo);
+}
+
+/* ---- Navegación ---- */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.navGrupo {
+  padding: 16px 12px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #647890;
+  white-space: nowrap;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--lateral-texto);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+}
+
+.navItem:hover {
+  background: var(--lateral-hover);
+  color: #fff;
+}
+
+.navItem.active {
+  background: var(--lateral-activo);
+  color: #fff;
+}
+
+.navToggle {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.navToggle.active {
+  background: var(--lateral-activo);
+  color: #fff;
+}
+
+.navIcon {
+  flex-shrink: 0;
+}
+
+.navLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  transition: transform 0.2s;
+}
+
+.chevronAbierto {
+  transform: rotate(180deg);
+}
+
+/* Sub-nav Receptores: border-left 1.5px rgba(255,255,255,.09) */
+.subNavReceptores {
+  margin: 2px 0 4px 22px;
+  padding-left: 12px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subItem {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--lateral-texto);
+  transition: background 0.16s, color 0.16s;
+}
+
+.subItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.subActive {
+  background: var(--lateral-activo) !important;
+  color: #fff !important;
+}
+
+.subDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  flex: 0 0 auto;
+}
+
+.subActive .subDot {
+  background: #fff;
+  border-color: #fff;
+}
+
+.subLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sub-nav Comprobantes: border-left 3px #8b5cf6 */
+.subNavComprobantes {
+  margin: 2px 0 4px 22px;
+  padding-left: 13px;
+  border-left: 3px solid #8b5cf6;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Sub-navs Egresos / Cuentas: sin borde, indent 18px */
+.subNavEgresos {
+  margin: 1px 0 3px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.subItemSm {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lateral-texto);
+  transition: background 0.16s, color 0.16s;
+}
+
+.subItemSm:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+/* Footer SRI card — gradient #17263f→#0d1a2e */
+.sriCard {
+  flex: 0 0 auto;
+  position: relative;
+  background: linear-gradient(160deg, #17263f, #0d1a2e);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 15px;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  margin-top: 14px;
+}
+
+.sriCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--marca-inicio), var(--marca-fin));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px rgba(31, 111, 208, 0.4);
+  margin-bottom: 11px;
+  color: #fff;
+}
+
+.sriCardTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.sriCardDesc {
+  font-size: 12.5px;
+  color: #93a6bf;
+  line-height: 1.45;
+}
+
+.sriCardChat {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--marca-inicio), var(--marca-fin));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+/* ---- Contenido ---- */
+.main {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Header — sticky glass (mockup líneas 162-163) */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 14px 20px 6px;
+  background: linear-gradient(180deg, #eef2f7, rgba(238, 242, 247, 0));
+  flex-shrink: 0;
+}
+
+.headerGlass {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, var(--header-glass-from), var(--header-glass-to));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--header-borde);
+  box-shadow: var(--header-sombra);
+}
+
+.burgerBtn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(15, 30, 51, 0.08);
+  border-radius: 10px;
+  padding: 8px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.headerSaludo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.avatarGrande {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1f6fd0, #17263f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 6px 16px rgba(31, 111, 208, 0.32);
+  flex: 0 0 auto;
+}
+
+.saludoTexto {
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.saludoHola {
+  font-size: 13px;
+  color: #5b6b82;
+  font-weight: 600;
+}
+
+.saludoNombre {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f1e33;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 42vw;
+}
+
+.headerCentro {
+  flex: 1;
+  min-width: 8px;
+}
+
+.headerCluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(15, 30, 51, 0.07);
+  flex-shrink: 0;
+}
+
+.clusterCloud {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 8px;
+  border-right: 1px solid rgba(15, 30, 51, 0.1);
+  /* El icono hereda este color: lucide pinta `stroke` como atributo del SVG y
+     ahí var() no resuelve, así que el token tiene que venir del contenedor. */
+  color: var(--marca-fin);
+}
+
+.clusterBtn {
+  background: transparent;
+  color: #3d4d66;
+  padding: 6px;
+  border-radius: 9px;
+  display: flex;
+}
+
+.clusterBtn:hover {
+  background: rgba(15, 30, 51, 0.06);
+}
+
+.clusterBtnBell {
+  position: relative;
+  background: transparent;
+  color: #3d4d66;
+  padding: 6px;
+  border-radius: 9px;
+  display: flex;
+}
+
+.clusterBtnBell:hover {
+  background: rgba(15, 30, 51, 0.06);
+}
+
+.badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #e63946;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #f4f7fb;
+}
+
+.sriLogo {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(15, 30, 51, 0.1);
+  font-weight: 900;
+  font-size: 19px;
+  letter-spacing: -0.5px;
+}
+
+/**
+ * Azul y rojo del logotipo del SRI.
+ *
+ * No son colores de tema sino la marca del organismo: el logotipo se reproduce
+ * igual en cualquier soporte, y cambiarlo con el modo oscuro sería alterar una
+ * identidad ajena. Se quedan literales a propósito, y pueden hacerlo porque la
+ * barra que los contiene (`.headerCluster`) es clara en los dos temas.
+ */
+.sriLogoAzul {
+  color: #1f5fae;
+}
+
+.sriLogoRojo {
+  color: #d62828;
+}
+
+.whatsappBox {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: linear-gradient(135deg, var(--cwo-whatsapp-from), var(--cwo-whatsapp-to));
+  border: 1px solid var(--cwo-whatsapp-borde);
+  border-radius: 15px;
+  padding: 9px 11px;
+  min-width: 230px;
+  flex: 0 1 300px;
+  box-shadow: var(--cwo-whatsapp-sombra);
+}
+
+.whatsappTitle {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f5132;
+}
+
+.whatsappRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.whatsappInput {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--cwo-whatsapp-input-borde);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: 13px;
+  color: #0f1e33;
+}
+
+.whatsappInput::placeholder {
+  color: #8a99ad;
+}
+
+.whatsappSend {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 37px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #f6863f, #ef5f2a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cwoPulse 2.4s infinite;
+}
+
+.whatsappSend:disabled {
+  cursor: not-allowed;
+}
+
+.whatsappToast {
+  margin-top: 6px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(15, 30, 51, 0.88);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.45;
+  animation: cwoToast 0.22s ease;
+}
+
+@keyframes cwoToast {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.menuButton {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.menuButton:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.insigniaDemo {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--warning-soft);
+  color: var(--warning);
+  white-space: nowrap;
+}
+
+.atajoPaleta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--surface-0);
+  border: 1px solid var(--field-borde);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.atajoPaleta:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.atajoPaleta kbd {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--field-borde);
+  font-family: inherit;
+  font-size: 0.72rem;
+}
+
+.content {
+  flex: 1 1 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 20px 44px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 30, 51, 0.18) transparent;
+}
+
+.content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 30, 51, 0.18);
+  border-radius: 20px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1023px) {
+  .content {
+    padding: 14px 14px 22px;
+  }
+
+  .header {
+    padding: 10px 12px 6px;
+  }
+
+  .whatsappBox {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .atajoPaleta span,
+  .atajoPaleta kbd {
+    display: none;
+  }
+
+  .saludoNombre {
+    max-width: 30vw;
+  }
+}
+
+@media (max-width: 700px) {
+  .insigniaDemo {
+    display: none;
+  }
+
+  .headerCluster {
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 8px 4px;
+  }
+
+  .content {
+    padding: 12px 10px 20px;
+  }
+}

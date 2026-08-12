@@ -1,0 +1,439 @@
+.container {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ---- Selector de período ---- */
+.periodo {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.select {
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 9px 14px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  min-width: 130px;
+}
+
+.select:focus {
+  border-color: var(--accent-primary);
+}
+
+.select option {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* ---- Pestañas ---- */
+.pestanas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--glass-border);
+  overflow-x: auto;
+}
+
+.pestana {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.pestana:hover {
+  color: var(--text-primary);
+}
+
+.pestanaActiva {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
+/* ---- Panel de reporte ---- */
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.panelCabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  flex-wrap: wrap;
+}
+
+.panelTitulo {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.panelNota {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.btnExportar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+
+.btnExportar:hover {
+  background: var(--surface-1);
+}
+
+/* ---- Tabla ---- */
+.tablaWrapper {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th,
+.tabla td {
+  padding: 13px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.tabla th {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.tabla tbody tr:hover {
+  background: var(--surface-0);
+}
+
+.numero {
+  font-family: monospace;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.tabla thead th.numero {
+  text-align: right;
+}
+
+.filaTotal td {
+  font-weight: 700;
+  background: var(--surface-2);
+  border-bottom: none;
+}
+
+.etiqueta {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.codigo {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ---- Tarjetas de totales ---- */
+.totales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.tarjeta {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tarjetaEtiqueta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.tarjetaValor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--text-primary);
+}
+
+.tarjetaAcento .tarjetaValor {
+  color: var(--accent-primary);
+}
+
+/* ---- Vacío ---- */
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.vacio p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.vacio span {
+  font-size: 0.85rem;
+}
+
+/* ---- Reportes Avanzados (isRepApp) ---- */
+.heroAvanzado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff8f4;
+  border: 1px solid #fbe0cd;
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+.heroIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: #ffe8d8;
+  color: #f26a35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.heroText { flex: 1; min-width: 160px; }
+.heroEyebrow { font-size: 11px; font-weight: 800; color: #f26a35; letter-spacing: 0.8px; }
+.heroTitle { font-size: 18px; font-weight: 700; color: #0f1e33; margin-top: 1px; }
+.heroSub { font-size: 12.5px; color: #a9b6c6; line-height: 1.45; margin-top: 2px; }
+
+.tabsTop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 10px 4px;
+  background: #fff;
+  border: 1px solid #eef1f5;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.tabTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #3d4d66;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.tabTop:hover { background: #f4f6f9; }
+.tabTopActivo { background: #f26a35; color: #fff; }
+
+.cardAvanzadoHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #eef1f5;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+.radiosRow { display: flex; gap: 18px; align-items: center; }
+.radioLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  color: #3d4d66;
+  cursor: pointer;
+}
+.radioOuter {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #c3ccd8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.radioDot { width: 8px; height: 8px; border-radius: 50%; }
+.toggleRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #5b6b82;
+  cursor: pointer;
+}
+.toggleTrack {
+  width: 40px;
+  height: 22px;
+  border-radius: 20px;
+  position: relative;
+  flex: 0 0 auto;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.toggleTrack[data-activo='true'] { background: #f26a35; }
+.toggleTrack[data-activo='false'] { background: #dfe3e8; }
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.notaFormato {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #8a99ad;
+  padding: 10px 4px;
+}
+.notaFormato code {
+  background: #eef1f5;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 11.5px;
+}
+.bannerProx {
+  margin: 10px 20px;
+  background: #fff8f4;
+  border: 1px solid #fbe0cd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #5b6b82;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badgeProx {
+  background: #f26a35;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.placeholderFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  padding: 14px 20px 18px;
+}
+.phField { display: flex; flex-direction: column; gap: 5px; }
+.phField span { font-size: 12.5px; color: #5b6b82; }
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .periodo {
+    width: 100%;
+  }
+
+  .select {
+    flex: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 4px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .tabla th,
+  .tabla td {
+    padding: 11px 14px;
+  }
+}

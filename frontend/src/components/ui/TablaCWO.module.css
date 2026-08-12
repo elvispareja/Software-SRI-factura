@@ -1,0 +1,195 @@
+.container { display: flex; flex-direction: column; gap: 16px; }
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerTitle { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 160px; }
+
+.headerIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: #fff4ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f26a35;
+  flex: 0 0 auto;
+}
+
+.title { font-size: 22px; font-weight: 800; color: #0f1e33; }
+.subtitle { font-size: 13px; color: #5b6b82; }
+.headerActions { display: flex; gap: 10px; align-items: center; }
+
+.panel {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 31, 54, 0.05);
+  box-shadow: 0 10px 26px rgba(16, 31, 54, 0.05);
+  overflow: hidden;
+}
+
+.filtrosTop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 18px;
+}
+
+.filtroLabel {
+  flex: 1 1 220px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filtroLabel span { font-size: 11px; font-weight: 700; color: #8a99ad; }
+
+.select {
+  padding: 11px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  font-size: 13.5px;
+  background: #f8fafc;
+  color: #3d4d66;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.select:focus { outline: none; border-color: #2aa9d6; background: #fff; }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.searchWrap { position: relative; flex: 1; min-width: 180px; }
+.searchIcon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
+
+.searchInput {
+  width: 100%;
+  padding: 11px 12px 11px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #0f1e33;
+}
+
+.searchInput:focus { outline: none; border-color: #2aa9d6; background: #fff; }
+
+.btnRefresh {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #fff;
+  color: #3d4d66;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btnRefresh:hover { background: #f1f5f9; }
+
+.toggleWrap { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+
+.toggleTrack {
+  width: 42px;
+  height: 24px;
+  border-radius: 20px;
+  position: relative;
+  flex: 0 0 auto;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.toggleTrack[data-activo="true"] { background: #f97316; }
+.toggleTrack[data-activo="false"] { background: #e2e8f0; }
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.toggleLabel { font-size: 13.5px; font-weight: 600; color: #3d4d66; }
+
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead tr { background: #f8fafc; }
+.table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #5b6b82;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.table tbody tr { border-top: 1px solid #eef1f5; transition: background 0.12s; }
+.table tbody tr:hover { background: #f8fbfe; }
+
+.table td { padding: 11px 12px; font-size: 13px; color: #3d4d66; }
+.table td:first-child { padding-left: 16px; }
+.table td:last-child { padding-right: 16px; }
+
+.sinCoincidencias { padding: 44px 20px; text-align: center; color: #8a99ad; font-size: 14px; }
+
+.pie { padding: 12px 16px; border-top: 1px solid #eef1f5; font-size: 13px; color: #5b6b82; }
+
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  border-top: 1px solid #eef1f5;
+  font-size: 13px;
+  color: #8a99ad;
+}
+
+.pagBtns { display: flex; gap: 6px; align-items: center; }
+
+.pagBtn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 11px;
+  font-size: 13px;
+  color: #3d4d66;
+  cursor: pointer;
+}
+
+.pagBtn:disabled { color: #94a3b8; cursor: not-allowed; }
+
+.pagNum {
+  border: 1px solid #f6a97f;
+  background: #fff4ed;
+  border-radius: 8px;
+  padding: 6px 11px;
+  font-size: 13px;
+  color: #c2410c;
+  font-weight: 700;
+}
