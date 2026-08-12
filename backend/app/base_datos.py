@@ -1,9 +1,8 @@
 """
 Conexión a la base de datos.
 
-Arranca en SQLite para no bloquear el desarrollo; el cambio a PostgreSQL es
-solo la variable de entorno `URL_BASE_DATOS`, porque todo el acceso pasa por
-SQLAlchemy y no hay SQL específico de motor.
+Solo PostgreSQL: `URL_BASE_DATOS` es obligatoria, no hay valor por defecto
+que oculte una configuración faltante en producción.
 """
 
 from __future__ import annotations
@@ -14,10 +13,10 @@ from collections.abc import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-URL_BASE_DATOS = os.getenv("URL_BASE_DATOS", "sqlite:///./facturacion.db")
+URL_BASE_DATOS = os.environ["URL_BASE_DATOS"]
 
-# check_same_thread solo aplica a SQLite: FastAPI atiende peticiones en hilos
-# distintos y sin esto SQLite se queja.
+# check_same_thread solo aplica si algo (p.ej. las pruebas) usa una URL sqlite;
+# en producción URL_BASE_DATOS siempre es PostgreSQL y esto no tiene efecto.
 argumentos_conexion = {"check_same_thread": False} if URL_BASE_DATOS.startswith("sqlite") else {}
 
 motor = create_engine(URL_BASE_DATOS, connect_args=argumentos_conexion, future=True)

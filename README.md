@@ -43,6 +43,9 @@ motor del servidor.
 
 ### Backend
 
+Requiere PostgreSQL corriendo (`docker compose up -d db` levanta el de
+`docker-compose.yml`) y `URL_BASE_DATOS` apuntando a él — ver `.env.example`.
+
 ```bash
 cd backend
 python -m venv .venv
@@ -76,7 +79,7 @@ Interfaz en `http://localhost:5173`.
 | Variable | Para qué | Por defecto |
 |---|---|---|
 | `CLAVE_SECRETA` | Firma los tokens de sesión y deriva la clave que cifra la contraseña del `.p12` | Valor de desarrollo — **el servidor avisa al arrancar si no la defines** |
-| `URL_BASE_DATOS` | Cadena de conexión | `sqlite:///./facturacion.db` |
+| `URL_BASE_DATOS` | Cadena de conexión (solo PostgreSQL) | — obligatoria, sin valor por defecto |
 | `ORIGENES_PERMITIDOS` | CORS del frontend | `http://localhost:5173` |
 | `COOKIE_SEGURA` | `false` solo en desarrollo sobre HTTP | `true` |
 | `COOKIE_SAMESITE` | `none` si frontend y API van a dominios distintos | `lax` |
