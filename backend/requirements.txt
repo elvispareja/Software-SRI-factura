@@ -5,6 +5,10 @@ uvicorn[standard]==0.37.0
 # incompatible y la instalación falla antes de llegar a nada más.
 pydantic[email]>=2.12.5
 python-multipart==0.0.20
+# Carga el `.env` desde app/__init__.py. Ya llegaba como dependencia transitiva
+# de uvicorn[standard], pero el código lo importa directo: va explícito para que
+# no desaparezca si uvicorn cambia sus extras.
+python-dotenv==1.2.2
 sqlalchemy==2.0.51
 # >=3.2.2 porque no hay wheel de 3.1.13 para Python 3.13+; con 3.13 sale un
 # error de compilación de psycopg2, no un mensaje sobre versiones.

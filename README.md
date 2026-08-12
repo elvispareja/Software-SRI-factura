@@ -43,10 +43,23 @@ motor del servidor.
 
 ### Backend
 
-Requiere PostgreSQL corriendo (`docker compose up -d db` levanta el de
-`docker-compose.yml`) y `URL_BASE_DATOS` apuntando a él — ver `.env.example`.
+Requiere PostgreSQL corriendo. `docker compose up -d db` levanta el de
+`docker-compose.yml`, que crea el rol y la base solo. Con un PostgreSQL ya
+instalado en la máquina hay que crearlos a mano una vez, como superusuario:
+
+```sql
+CREATE ROLE factoa LOGIN PASSWORD 'factoa';
+CREATE DATABASE factoa OWNER factoa;
+```
+
+Después, copia `.env.example` a `.env` en la raíz del repositorio y ajusta
+`URL_BASE_DATOS`. El backend lo lee al arrancar (`app/__init__.py`), así que no
+hay que exportar nada a mano; una variable ya definida en el entorno real gana
+sobre el archivo.
 
 ```bash
+cp .env.example .env    # y edita URL_BASE_DATOS
+
 cd backend
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt   # Windows
@@ -57,6 +70,16 @@ python -m venv .venv
 ```
 
 API en `http://localhost:8000` · documentación interactiva en `/docs`.
+
+En vez de sembrar datos nuevos se puede restaurar el respaldo del equipo, que
+trae la misma empresa de demostración con más movimiento. **Usa el `.dump`, no
+el `.sql`**: este último queda con CRLF al clonar en Windows y el `\r` se cuela
+en la última columna de cada fila dentro de los bloques `COPY`.
+
+```bash
+pg_restore -U factoa -h 127.0.0.1 -d factoa --no-owner --no-privileges \
+  --exit-on-error backend/backups/factoa_2026-08-12.dump
+```
 
 ### Frontend
 
@@ -75,6 +98,11 @@ Interfaz en `http://localhost:5173`.
 ---
 
 ## Variables de entorno
+
+Se leen del `.env` de la raíz del repositorio, o de `backend/.env` si prefieres
+tenerlo junto al servidor —ese gana si existen los dos—. Lo que ya esté definido
+en el entorno real tiene prioridad sobre el archivo: de eso dependen las pruebas,
+que apuntan a un SQLite temporal, y docker-compose, que inyecta las suyas.
 
 | Variable | Para qué | Por defecto |
 |---|---|---|

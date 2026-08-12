@@ -30,6 +30,24 @@ def cliente(tmp_path_factory):
     return TestClient(aplicacion)
 
 
+@pytest.fixture(autouse=True)
+def _sin_sesion_heredada(cliente):
+    """
+    Cada prueba arranca sin credenciales.
+
+    Este módulo se autentica con la cabecera `Authorization`, pero `/auth/token`
+    **siempre** responde además con `Set-Cookie`, y el `TestClient` la guarda en
+    su tarro. Sin limpiarla, las pruebas que comprueban «sin sesión» viajarían
+    autenticadas por la cookie que dejó la prueba anterior.
+
+    Esto pasaba desapercibido mientras `COOKIE_SEGURA` valía `true` por defecto:
+    la cookie salía marcada `Secure`, el `TestClient` habla HTTP y la descartaba
+    sola. O sea que las tres pruebas de «sin sesión» pasaban de rebote, y
+    bastaba con tener `COOKIE_SEGURA=false` en el entorno para verlas fallar.
+    """
+    cliente.cookies.clear()
+
+
 # --------------------------------------------------------------------------
 # Hashing de contraseñas
 # --------------------------------------------------------------------------

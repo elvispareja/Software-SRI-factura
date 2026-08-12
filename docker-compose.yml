@@ -4,7 +4,12 @@
 
 services:
   db:
-    image: postgres:16-alpine
+    # 18 y no 16: el respaldo de backend/backups/ se generó con pg_dump 17.10 y
+    # pg_restore no restaura hacia atrás. Ojo si ya tenías el volumen db_data
+    # creado con la 16 — el directorio de datos no es compatible entre versiones
+    # mayores y el contenedor no arranca. En ese caso: docker compose down -v
+    # (borra los datos) y vuelve a restaurar el dump.
+    image: postgres:18-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-factoa}
