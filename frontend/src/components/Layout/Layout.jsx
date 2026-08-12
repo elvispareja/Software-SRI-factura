@@ -28,6 +28,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { modoValido, PAGAR } from '../../api/cuentas';
 import SelectorTema from '../../tema/SelectorTema';
 import { useSesion } from '../../auth/useSesion';
 import PaletaComandos from '../ui/PaletaComandos';
@@ -79,6 +80,9 @@ export default function Layout() {
     pathname.startsWith('/guias');
   const esEgresos = pathname.startsWith('/gastos') || pathname.startsWith('/egresos');
   const esCuentas = pathname.startsWith('/cuentas');
+  // NavLink solo compara pathname, no el query string: Cobrar y Pagar viven
+  // los dos en /cuentas?tipo=... y sin esto se encendían siempre juntos.
+  const modoCuentasActivo = modoValido(new URLSearchParams(location.search).get('tipo'));
 
   // Un solo desplegable abierto a la vez: abrir uno cierra el anterior, en
   // vez de cuatro banderas independientes que se acumulaban en pantalla.
@@ -416,17 +420,13 @@ export default function Layout() {
             <div className={styles.subNavEgresos}>
               <NavLink
                 to="/cuentas?tipo=cobrar"
-                className={({ isActive }) =>
-                  `${styles.subItemSm} ${isActive ? styles.subActive : ''}`
-                }
+                className={`${styles.subItemSm} ${esCuentas && modoCuentasActivo !== PAGAR ? styles.subActive : ''}`}
               >
                 Cuentas por Cobrar
               </NavLink>
               <NavLink
                 to="/cuentas?tipo=pagar"
-                className={({ isActive }) =>
-                  `${styles.subItemSm} ${isActive ? styles.subActive : ''}`
-                }
+                className={`${styles.subItemSm} ${esCuentas && modoCuentasActivo === PAGAR ? styles.subActive : ''}`}
               >
                 Cuentas por Pagar
               </NavLink>
