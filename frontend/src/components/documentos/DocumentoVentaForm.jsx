@@ -37,11 +37,37 @@ import styles from './DocumentoVentaForm.module.css';
  * régimen no admite.
  */
 
+// Catálogo de formas de pago del SRI (Tabla 24), como en el diseño.
 const FORMAS_PAGO = [
-  { codigo: '01', nombre: '01 - Sin utilización del sistema financiero' },
-  { codigo: '16', nombre: '16 - Tarjeta de débito' },
-  { codigo: '19', nombre: '19 - Tarjeta de crédito' },
-  { codigo: '20', nombre: '20 - Otros con utilización del sistema financiero' },
+  { codigo: '01', nombre: 'Sin utilización del sistema financiero' },
+  { codigo: '15', nombre: 'Compensación de deudas' },
+  { codigo: '16', nombre: 'Tarjeta de débito' },
+  { codigo: '17', nombre: 'Dinero electrónico' },
+  { codigo: '18', nombre: 'Tarjeta prepago' },
+  { codigo: '19', nombre: 'Tarjeta de crédito' },
+  { codigo: '20', nombre: 'Otros con utilización del sistema financiero' },
+  { codigo: '21', nombre: 'Endoso de títulos' },
+];
+
+// Desglose "Detalle de Venta" del panel derecho (como el diseño): todas las
+// tarifas de IVA aunque estén en cero. El código es el codigoPorcentaje del SRI.
+const TARIFAS_DETALLE = [
+  ['Subtotal IVA 0%', '0'],
+  ['Subtotal IVA 5%', '5'],
+  ['Subtotal IVA 12%', '2'],
+  ['Subtotal IVA 13%', '10'],
+  ['Subtotal IVA 14%', '3'],
+  ['Subtotal IVA 15%', '4'],
+  ['Subtotal IVA Diferenciado', '8'],
+  ['Subtotal No Objeto de IVA', '6'],
+  ['Subtotal Exento de IVA', '7'],
+];
+const IVA_DETALLE = [
+  ['IVA 5%', '5'],
+  ['IVA 12%', '2'],
+  ['IVA 13%', '10'],
+  ['IVA 14%', '3'],
+  ['IVA 15%', '4'],
 ];
 
 let contadorLineas = 0;
@@ -124,6 +150,11 @@ export default function DocumentoVentaForm({
     if (!cliente) errores.push(`Selecciona el ${etiquetaReceptor.toLowerCase()} del documento.`);
     return { esValido: errores.length === 0, errores };
   }, [validacionBase, cliente, etiquetaReceptor, erroresExtra]);
+
+  // Base imponible / IVA por código de tarifa, para el "Detalle de Venta".
+  const grupoTarifa = (codigo) => documento.impuestos.find((g) => g.codigoPorcentaje === codigo);
+  const baseTarifa = (codigo) => grupoTarifa(codigo)?.baseImponible ?? 0;
+  const ivaTarifa = (codigo) => grupoTarifa(codigo)?.valor ?? 0;
 
   const seleccionarCliente = (receptor) => {
     setCliente(receptor);
@@ -351,7 +382,7 @@ export default function DocumentoVentaForm({
           <div className={`${styles.sectionPanel} glass-panel`}>
             <div className={styles.docHeader}>
               <div>
-                <label className={styles.grupo}><span>Empresa Sucursal</span><select className={styles.input}><option>Matriz</option></select></label>
+                <label className={styles.grupo}><span>Empresa Sucursal</span><select className={styles.input}><option>Principal</option><option>Sucursal Guayaquil</option><option>Sucursal Cuenca</option></select></label>
                 <div style={{ marginTop: 16, lineHeight: 1.65 }}><div style={{ fontSize: 17, fontWeight: 800 }}>Empresa</div><div className={`cifra ${styles.rucEmpresa}`}>RUC —</div></div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12, minWidth: 210 }}>
@@ -682,52 +713,56 @@ export default function DocumentoVentaForm({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <h3 className={styles.sectionTitle}>Resumen</h3>
+            <h3 className={styles.sectionTitle}>Detalle de Venta</h3>
 
             <div className={styles.totalsGroup}>
-              {documento.impuestos.length === 0 ? (
-                <div className={styles.totalRow}>
-                  <span>Subtotal</span>
-                  <span>{formatearMoneda(0)}</span>
+              {TARIFAS_DETALLE.map(([etiqueta, codigo]) => (
+                <div className={styles.totalRow} key={etiqueta}>
+                  <span>{etiqueta}</span>
+                  <span>{formatearMoneda(baseTarifa(codigo))}</span>
                 </div>
-              ) : (
-                documento.impuestos.map((grupo) => (
-                  <div className={styles.totalRow} key={`base-${grupo.codigoPorcentaje}`}>
-                    <span>Subtotal {desglosaIva ? grupo.tarifa.etiquetaCorta : ''}</span>
-                    <span>{formatearMoneda(grupo.baseImponible)}</span>
-                  </div>
-                ))
-              )}
-
-              <div className={styles.totalRow}>
-                <span>Descuento</span>
-                <span>
-                  {documento.totalDescuento > 0 ? '-' : ''}
-                  {formatearMoneda(documento.totalDescuento)}
-                </span>
-              </div>
+              ))}
 
               <div className={styles.divider}></div>
 
               <div className={styles.totalRow}>
-                <span>Subtotal sin impuestos</span>
+                <span>Subtotal Sin Impuestos</span>
                 <span>{formatearMoneda(documento.totalSinImpuestos)}</span>
               </div>
+              <div className={styles.totalRow}>
+                <span>Descuento (-)</span>
+                <span>{formatearMoneda(documento.totalDescuento)}</span>
+              </div>
+              <div className={styles.totalRow}>
+                <span>Monto Bruto</span>
+                <span>{formatearMoneda(documento.totalSinImpuestos + documento.totalDescuento)}</span>
+              </div>
+              <div className={styles.totalRow}>
+                <span>Valor ICE</span>
+                <span>{formatearMoneda(0)}</span>
+              </div>
+              <div className={styles.totalRow}>
+                <span>Valor IRBPNR</span>
+                <span>{formatearMoneda(0)}</span>
+              </div>
 
-              {desglosaIva &&
-                documento.impuestos
-                  .filter((grupo) => grupo.tarifa.porcentaje > 0)
-                  .map((grupo) => (
-                    <div className={styles.totalRow} key={`iva-${grupo.codigoPorcentaje}`}>
-                      <span>IVA {grupo.tarifa.etiquetaCorta}</span>
-                      <span>{formatearMoneda(grupo.valor)}</span>
-                    </div>
-                  ))}
+              <div className={styles.divider}></div>
+
+              {IVA_DETALLE.map(([etiqueta, codigo]) => (
+                <div className={styles.totalRow} key={etiqueta}>
+                  <span>{etiqueta}</span>
+                  <span>{formatearMoneda(ivaTarifa(codigo))}</span>
+                </div>
+              ))}
+              <div className={styles.totalRow}>
+                <span>IVA Total</span>
+                <span>{formatearMoneda(documento.totalIva)}</span>
+              </div>
 
               <div className={styles.divider}></div>
 
               <div className={styles.totalRowGrand}>
-                <span>Total</span>
+                <span>Total a Pagar</span>
                 <span className={styles.grandTotal}>
                   {formatearMoneda(documento.importeTotal)}
                 </span>
