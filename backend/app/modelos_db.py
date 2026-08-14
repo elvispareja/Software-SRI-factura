@@ -46,6 +46,26 @@ class Usuario(Base):
     creado_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=ahora)
 
 
+class TokenRevocado(Base):
+    """
+    Lista de revocación de tokens JWT (para que el logout tenga efecto inmediato).
+
+    El JWT es autocontenido: una vez emitido vale hasta expirar (~12 h) y borrar
+    la cookie no lo invalida. Al cerrar sesión se apunta aquí el `jti` (id único)
+    del token; `usuario_actual` rechaza con 401 cualquier token cuyo `jti` figure
+    en esta tabla. La crea `Base.metadata.create_all()`; el backend no usa
+    migraciones.
+
+    En producción conviene purgar periódicamente las filas cuyo token ya expiró:
+    una vez vencido el token, su entrada aquí ya no aporta nada.
+    """
+
+    __tablename__ = "tokens_revocados"
+
+    jti: Mapped[str] = mapped_column(String(64), primary_key=True)
+    revocado_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=ahora)
+
+
 class Empresa(Base):
     __tablename__ = "empresas"
 

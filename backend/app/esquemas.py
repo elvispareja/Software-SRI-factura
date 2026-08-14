@@ -107,10 +107,22 @@ class DetalleEntrada(Base):
     codigo_principal: str
     codigo_auxiliar: str | None = None
     descripcion: str
-    cantidad: Decimal = Decimal("1")
-    precio_unitario: Decimal = Decimal("0")
-    descuento_porcentaje: Decimal = Decimal("0")
+    # Guardas numéricas en el servidor: hasta ahora solo las validaba el
+    # frontend, y un descuento negativo o un IVA desconocido derivaban en un
+    # importe negativo o en un 500. Aquí devuelven 422.
+    cantidad: Decimal = Field(default=Decimal("1"), gt=0)
+    precio_unitario: Decimal = Field(default=Decimal("0"), ge=0)
+    descuento_porcentaje: Decimal = Field(default=Decimal("0"), ge=0, le=100)
     codigo_iva: str = "4"
+
+    @field_validator("codigo_iva")
+    @classmethod
+    def iva_conocido(cls, valor: str) -> str:
+        from .sri.modelos import PORCENTAJES_IVA
+
+        if valor not in PORCENTAJES_IVA:
+            raise ValueError(f"Código de IVA desconocido: {valor}")
+        return valor
 
 
 class DetalleSalida(DetalleEntrada):
@@ -729,10 +741,22 @@ class DevolucionAnticipoSalida(Base):
 class LineaRecurrenteEntrada(Base):
     codigo_principal: str = "SIN-COD"
     descripcion: str = Field(min_length=1, max_length=300)
-    cantidad: Decimal = Decimal("1")
-    precio_unitario: Decimal = Decimal("0")
-    descuento_porcentaje: Decimal = Decimal("0")
+    # Mismas guardas que en DetalleEntrada: la plantilla recurrente termina
+    # generando facturas reales, así que un valor fuera de rango debe frenarse
+    # al guardar la plantilla, no al emitir.
+    cantidad: Decimal = Field(default=Decimal("1"), gt=0)
+    precio_unitario: Decimal = Field(default=Decimal("0"), ge=0)
+    descuento_porcentaje: Decimal = Field(default=Decimal("0"), ge=0, le=100)
     codigo_iva: str = "4"
+
+    @field_validator("codigo_iva")
+    @classmethod
+    def iva_conocido(cls, valor: str) -> str:
+        from .sri.modelos import PORCENTAJES_IVA
+
+        if valor not in PORCENTAJES_IVA:
+            raise ValueError(f"Código de IVA desconocido: {valor}")
+        return valor
 
 
 class LineaRecurrenteSalida(LineaRecurrenteEntrada):

@@ -20,7 +20,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request,
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ..base_datos import obtener_sesion
+from ..base_datos import SesionLocal, obtener_sesion
 from ..ia.orquestador import atender_mensaje
 from ..seguridad import usuario_actual
 
@@ -32,6 +32,37 @@ SECRETO_APP = os.getenv("WHATSAPP_SECRETO_APP", "")
 TOKEN_ACCESO = os.getenv("WHATSAPP_TOKEN_ACCESO", "")
 ID_NUMERO = os.getenv("WHATSAPP_ID_NUMERO", "")
 VERSION_GRAPH = os.getenv("WHATSAPP_VERSION_GRAPH", "v21.0")
+
+
+def _normalizar_telefono(numero: str) -> str:
+    """Normaliza un número para comparar: quita espacios y el prefijo '+'."""
+    return numero.replace(" ", "").replace("+", "").strip()
+
+
+# ALLOWLIST de teléfonos autorizados a facturar por WhatsApp.
+#
+# La firma HMAC de Meta (_firma_valida) solo prueba que el mensaje viene de
+# Meta, NO que el remitente esté autorizado. Sin esta lista, cualquiera que
+# escriba al número del bot podría disparar la emisión de comprobantes. Se lee
+# de WHATSAPP_TELEFONOS_AUTORIZADOS (números separados por comas) y se normaliza
+# quitando espacios y '+' para que el formato del env no importe.
+TELEFONOS_AUTORIZADOS = frozenset(
+    _normalizar_telefono(t)
+    for t in os.getenv("WHATSAPP_TELEFONOS_AUTORIZADOS", "").split(",")
+    if t.strip()
+)
+
+
+def _remitente_autorizado(remitente: str) -> bool:
+    """
+    Indica si un remitente puede facturar por WhatsApp.
+
+    Política FAIL-CLOSED: si la allowlist está vacía o no configurada, no se
+    autoriza a nadie. Es preferible no facturar a facturar para un desconocido.
+    """
+    if not TELEFONOS_AUTORIZADOS:
+        return False
+    return _normalizar_telefono(remitente) in TELEFONOS_AUTORIZADOS
 
 # Imports opcionales — no deben romper el webhook si no están instalados.
 try:
@@ -279,9 +310,19 @@ def _ocr_imagen(imagen_bytes: bytes, mime: str | None) -> str | None:
     return None
 
 
-def _procesar(mensaje: dict, sesion: Session) -> None:
+def _procesar(mensaje: dict) -> None:
     """Atiende un mensaje y responde. Corre en segundo plano."""
     remitente = mensaje.get("from", "")
+
+    # ALLOWLIST — se comprueba ANTES de descargar media o llamar al orquestador.
+    # La firma HMAC solo garantiza el origen (Meta), no la identidad autorizada
+    # del remitente. FAIL-CLOSED: si la allowlist está vacía no se procesa a
+    # nadie. Se responde un mensaje neutro para no filtrar si el número existe.
+    if not _remitente_autorizado(remitente):
+        registro.warning("Remitente no autorizado intentó facturar por WhatsApp: %s", remitente)
+        enviar_mensaje(remitente, "Este número no está autorizado para facturar por WhatsApp.")
+        return
+
     tipo = mensaje.get("type", "")
 
     texto: str | None = None
@@ -347,6 +388,12 @@ def _procesar(mensaje: dict, sesion: Session) -> None:
         enviar_mensaje(remitente, "No pude entender el mensaje vacío. Inténtalo de nuevo.")
         return
 
+    # SESIÓN DE BD POR TAREA: esta función corre en una BackgroundTask, DESPUÉS
+    # de que FastAPI ya cerró la sesión del request. Reusar aquella sesión daría
+    # errores (sesión cerrada) y, si llegan varios mensajes a la vez, se
+    # compartiría entre hilos (SQLAlchemy Session no es thread-safe). Por eso
+    # abrimos aquí una SesionLocal() propia y la cerramos siempre con finally.
+    sesion = SesionLocal()
     try:
         # Se propaga es_audio/es_imagen al orquestador para anotar el historial.
         try:
@@ -357,6 +404,8 @@ def _procesar(mensaje: dict, sesion: Session) -> None:
     except Exception:  # noqa: BLE001 - el webhook nunca debe reventar por un mensaje
         registro.exception("Fallo procesando mensaje de %s", remitente)
         respuesta = "Tuve un problema procesando tu mensaje. Inténtalo de nuevo en un momento."
+    finally:
+        sesion.close()
 
     enviar_mensaje(remitente, respuesta)
 
@@ -365,7 +414,6 @@ def _procesar(mensaje: dict, sesion: Session) -> None:
 async def recibir_webhook(
     request: Request,
     tareas: BackgroundTasks,
-    sesion: Session = Depends(obtener_sesion),
 ):
     """
     Recibe los mensajes entrantes.
@@ -373,6 +421,9 @@ async def recibir_webhook(
     Se responde 200 de inmediato y el trabajo va a segundo plano: Meta corta a
     los 20 segundos y reintenta si no recibe respuesta, lo que duplicaría el
     procesamiento del mismo mensaje.
+
+    No se inyecta la sesión del request: la BackgroundTask corre después de que
+    FastAPI la cierra, así que cada tarea (_procesar) abre su propia SesionLocal.
     """
     cuerpo_bruto = await request.body()
 
@@ -382,7 +433,7 @@ async def recibir_webhook(
     cuerpo = await request.json()
 
     for mensaje in _extraer_mensajes(cuerpo):
-        tareas.add_task(_procesar, mensaje, sesion)
+        tareas.add_task(_procesar, mensaje)
 
     return {"recibido": True}
 

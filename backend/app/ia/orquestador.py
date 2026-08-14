@@ -11,12 +11,13 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from ..fecha_ec import hoy_ec
 from ..modelos_db import Comprobante, DetalleComprobante, Empresa, Establecimiento, PuntoEmision, Receptor
 from ..servicios.emision import ErrorEmision, emitir_comprobante
 from ..servicios.secuenciales import formatear_numero, reservar_secuencial
@@ -161,7 +162,7 @@ def _preparar_borrador(sesion: Session, extraccion, receptor: Receptor) -> dict 
             razon_social=receptor.razon_social,
             direccion=receptor.direccion or "S/N",
         ),
-        fecha_emision=date.today(),
+        fecha_emision=hoy_ec(),
         secuencial=0,
         detalles=lineas,
     )
@@ -213,7 +214,7 @@ def _crear_comprobante(sesion: Session, empresa: Empresa, borrador: dict) -> Com
         establecimiento=establecimiento.codigo,
         punto_emision=punto.codigo,
         secuencial=secuencial,
-        fecha_emision=date.today(),
+        fecha_emision=hoy_ec(),
         receptor_id=borrador["cliente_id"],
         receptor_razon_social=borrador["cliente_nombre"],
         receptor_identificacion=borrador["cliente_identificacion"],

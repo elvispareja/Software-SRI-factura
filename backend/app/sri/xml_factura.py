@@ -13,7 +13,7 @@ from decimal import Decimal
 from lxml import etree
 
 from .clave_acceso import DatosClaveAcceso, TIPO_COMPROBANTE, generar_clave_acceso
-from .modelos import Factura
+from .modelos import Factura, redondear
 
 VERSION_FACTURA = "1.1.0"
 
@@ -28,10 +28,14 @@ def _texto(padre: etree._Element, etiqueta: str, valor) -> etree._Element:
 
 
 def _formatear(valor) -> str:
-    if isinstance(valor, Decimal):
-        return f"{valor:.2f}"
     if isinstance(valor, bool):
         return "SI" if valor else "NO"
+    if isinstance(valor, Decimal):
+        # Decimal.__format__ redondea con ROUND_HALF_EVEN (banquero) según el
+        # contexto, mientras el motor cuadra con ROUND_HALF_UP. Cuantizamos a 2
+        # decimales con half-up ANTES de formatear para que lo serializado
+        # coincida siempre con lo calculado (p.ej. valorRetenido = base x %).
+        return f"{redondear(valor):.2f}"
     return str(valor)
 
 

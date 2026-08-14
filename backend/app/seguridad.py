@@ -26,7 +26,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .base_datos import obtener_sesion
-from .modelos_db import Usuario
+from .modelos_db import TokenRevocado, Usuario
 
 CLAVE_SECRETA = os.getenv("CLAVE_SECRETA", "desarrollo-no-usar-en-produccion")
 ES_CLAVE_DE_DESARROLLO = CLAVE_SECRETA == "desarrollo-no-usar-en-produccion"
@@ -128,6 +128,10 @@ def crear_token(asunto: str, datos_extra: dict | None = None) -> str:
         "sub": asunto,
         "exp": int(expira.timestamp()),
         "iat": int(datetime.now(timezone.utc).timestamp()),
+        # `jti`: identificador único del token. Permite revocarlo en el logout
+        # (ver TokenRevocado y usuario_actual). Sin él, cerrar sesión solo
+        # borraría la cookie y el token seguiría válido hasta expirar.
+        "jti": secrets.token_hex(16),
         **(datos_extra or {}),
     }
 
@@ -188,6 +192,14 @@ def usuario_actual(
             detail=str(fallo),
             headers={"WWW-Authenticate": "Bearer"},
         ) from fallo
+
+    # Token revocado en un logout: aunque la firma sea válida y no haya expirado,
+    # si su `jti` está en la lista de revocación no vale. Los tokens antiguos sin
+    # `jti` (emitidos antes de esta mejora) no se pueden revocar; se dejan pasar
+    # para no invalidar sesiones en curso al desplegar.
+    jti = cuerpo.get("jti")
+    if jti and sesion.scalar(select(TokenRevocado).where(TokenRevocado.jti == jti)):
+        raise error
 
     usuario = sesion.scalar(select(Usuario).where(Usuario.correo == cuerpo.get("sub")))
     if usuario is None or not usuario.activo:

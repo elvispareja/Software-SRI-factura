@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import os
+import threading
+import time
+from collections import defaultdict, deque
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
@@ -10,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..base_datos import obtener_sesion
-from ..modelos_db import Usuario
+from ..modelos_db import TokenRevocado, Usuario
 from ..seguridad import (
     COOKIE_SAMESITE,
     COOKIE_SEGURA,
@@ -19,6 +24,7 @@ from ..seguridad import (
     administrador_actual,
     cifrar_contrasena,
     crear_token,
+    decodificar_token,
     esquema_oauth,
     usuario_actual,
     verificar_contrasena,
@@ -27,6 +33,58 @@ from ..seguridad import (
 router = APIRouter(prefix="/auth", tags=["autenticación"])
 
 LONGITUD_MINIMA_CONTRASENA = 8
+
+# Autorregistro: por defecto CERRADO. Con al menos un usuario en la base, el
+# alta la hace un administrador (ver `registrar`). Poniendo PERMITIR_AUTORREGISTRO
+# = "true" se reabre el alta pública (cualquiera se registra como operador); no
+# se recomienda en producción. El default "false" preserva el comportamiento
+# actual del código, que ya exige administrador para las altas posteriores.
+PERMITIR_AUTORREGISTRO = os.getenv("PERMITIR_AUTORREGISTRO", "false").lower() == "true"
+
+# --------------------------------------------------------------------------
+# Límite de intentos de login (defensa anti fuerza bruta)
+# --------------------------------------------------------------------------
+#
+# Cuenta los intentos FALLIDOS por (IP, correo) dentro de una ventana móvil y
+# responde 429 al superar el máximo. Los logins correctos no cuentan y además
+# limpian el contador de esa clave.
+#
+# IMPORTANTE: es un contador EN MEMORIA y POR PROCESO. Con varios workers o
+# réplicas cada proceso lleva su propia cuenta, así que el límite efectivo se
+# multiplica. Para un límite real y compartido, en producción conviene
+# slowapi + Redis (o similar). Aquí se hace a mano para no añadir dependencias.
+MAX_INTENTOS_FALLIDOS = 8
+VENTANA_INTENTOS_SEGUNDOS = 300  # 5 minutos
+
+_intentos_fallidos: dict[tuple[str, str], deque[float]] = defaultdict(deque)
+_candado_intentos = threading.Lock()
+
+
+def _ip_cliente(peticion: Request) -> str:
+    return peticion.client.host if peticion.client else "desconocida"
+
+
+def _limite_alcanzado(clave: tuple[str, str], ahora: float) -> bool:
+    """Purga los intentos viejos y dice si la clave está bloqueada ahora mismo."""
+    with _candado_intentos:
+        cola = _intentos_fallidos[clave]
+        while cola and ahora - cola[0] > VENTANA_INTENTOS_SEGUNDOS:
+            cola.popleft()
+        if not cola:
+            # Sin intentos vigentes: no dejar la clave vacía ocupando memoria.
+            _intentos_fallidos.pop(clave, None)
+            return False
+        return len(cola) >= MAX_INTENTOS_FALLIDOS
+
+
+def _registrar_intento_fallido(clave: tuple[str, str], ahora: float) -> None:
+    with _candado_intentos:
+        _intentos_fallidos[clave].append(ahora)
+
+
+def _limpiar_intentos(clave: tuple[str, str]) -> None:
+    with _candado_intentos:
+        _intentos_fallidos.pop(clave, None)
 
 
 class Token(BaseModel):
@@ -92,7 +150,8 @@ def registrar(
 
     es_primero = (sesion.scalar(select(func.count()).select_from(Usuario)) or 0) == 0
 
-    # Con usuarios ya en la base, el alta exige un administrador con sesión.
+    # Con usuarios ya en la base, y salvo que se haya reabierto el autorregistro
+    # (PERMITIR_AUTORREGISTRO), el alta exige un administrador con sesión.
     # No se declara como dependencia del endpoint porque la condición depende
     # del estado de la base, y una dependencia se evalúa siempre. El token se
     # recibe por la vía normal (`esquema_oauth`) para que sirvan tanto la
@@ -102,7 +161,10 @@ def registrar(
     # un desconocido distinguía un 409 de un 401 y averiguaba así qué correos
     # están registrados. El login ya evita esa fuga a propósito (ver más
     # abajo); dejarla abierta aquí la habría hecho inútil.
-    if not es_primero:
+    #
+    # El bootstrap (0 usuarios) nunca pide sesión: sin él no habría forma de
+    # crear al primer administrador.
+    if not es_primero and not PERMITIR_AUTORREGISTRO:
         administrador_actual(usuario_actual(peticion, token, sesion))
 
     correo = datos.correo.lower()
@@ -124,14 +186,29 @@ def registrar(
 @router.post("/token", response_model=Token)
 def iniciar_sesion(
     respuesta: Response,
+    peticion: Request,
     formulario: OAuth2PasswordRequestForm = Depends(),
     sesion: Session = Depends(obtener_sesion),
 ):
-    usuario = sesion.scalar(select(Usuario).where(Usuario.correo == formulario.username.lower()))
+    correo = formulario.username.lower()
+    clave_intentos = (_ip_cliente(peticion), correo)
+    ahora = time.monotonic()
+
+    # Freno anti fuerza bruta: si esta (IP, correo) ya acumuló demasiados fallos
+    # en la ventana, se corta antes de tocar la base o comparar la contraseña.
+    if _limite_alcanzado(clave_intentos, ahora):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Demasiados intentos fallidos. Espere unos minutos y vuelva a intentarlo.",
+            headers={"Retry-After": str(VENTANA_INTENTOS_SEGUNDOS)},
+        )
+
+    usuario = sesion.scalar(select(Usuario).where(Usuario.correo == correo))
 
     # Mismo mensaje para usuario inexistente y contraseña incorrecta: distinguir
     # ambos casos permitiría averiguar qué correos están registrados.
     if usuario is None or not verificar_contrasena(formulario.password, usuario.contrasena_hash):
+        _registrar_intento_fallido(clave_intentos, ahora)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos.",
@@ -140,6 +217,10 @@ def iniciar_sesion(
 
     if not usuario.activo:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "La cuenta está desactivada.")
+
+    # Login correcto: no cuenta como intento y limpia los fallos previos de esta
+    # clave, para que un usuario legítimo no arrastre el bloqueo tras acertar.
+    _limpiar_intentos(clave_intentos)
 
     token = crear_token(usuario.correo, {"rol": usuario.rol, "nombre": usuario.nombre})
 
@@ -164,8 +245,23 @@ def iniciar_sesion(
 
 
 @router.post("/salir", status_code=204)
-def cerrar_sesion(respuesta: Response):
-    """Borra la cookie. El token sigue siendo válido hasta expirar."""
+def cerrar_sesion(
+    respuesta: Response,
+    peticion: Request,
+    token: str | None = Depends(esquema_oauth),
+    sesion: Session = Depends(obtener_sesion),
+):
+    """
+    Cierra la sesión: borra la cookie y REVOCA el token.
+
+    Antes solo se borraba la cookie, pero el JWT es autocontenido y seguía
+    siendo válido hasta expirar (~12 h). Ahora, además, se apunta el `jti` del
+    token en `tokens_revocados`, y `usuario_actual` rechaza con 401 cualquier
+    token revocado. Así el cierre de sesión tiene efecto inmediato.
+
+    Si no llega token, o viene vencido/manipulado (o es antiguo sin `jti`), no
+    hay nada que revocar: la cookie ya se borró y se responde 204 igual.
+    """
     respuesta.delete_cookie(
         key=NOMBRE_COOKIE,
         httponly=True,
@@ -173,6 +269,32 @@ def cerrar_sesion(respuesta: Response):
         samesite=COOKIE_SAMESITE,
         path="/",
     )
+
+    # El token puede venir por cabecera (Bearer) o por cookie, igual que en el
+    # resto del API.
+    token = token or peticion.cookies.get(NOMBRE_COOKIE)
+    if not token:
+        return
+
+    try:
+        cuerpo = decodificar_token(token)
+    except ValueError:
+        return
+
+    jti = cuerpo.get("jti")
+    if not jti:
+        return
+
+    # Idempotente: cerrar sesión dos veces con el mismo token no debe fallar.
+    if sesion.scalar(select(TokenRevocado).where(TokenRevocado.jti == jti)):
+        return
+
+    sesion.add(TokenRevocado(jti=jti))
+    try:
+        sesion.commit()
+    except IntegrityError:
+        # Carrera: otra petición revocó el mismo jti primero. Ya está revocado.
+        sesion.rollback()
 
 
 @router.get("/yo", response_model=UsuarioSalida)

@@ -141,6 +141,15 @@ def anular_guia(guia_id: int, sesion: Session = Depends(obtener_sesion)):
     if guia.estado_sri == "Autorizado":
         raise HTTPException(409, "Una guía autorizada no se puede anular desde aquí.")
 
+    # "Pendiente" significa que el SRI ya la recibió y aún puede autorizarla:
+    # hay que consultar su estado antes de anularla.
+    if guia.estado_sri == "Pendiente":
+        raise HTTPException(
+            409,
+            "La guía está Pendiente en el SRI y podría autorizarse. "
+            "Consulta su estado antes de anularla.",
+        )
+
     guia.estado_sri = "Anulado"
     sesion.commit()
     sesion.refresh(guia)

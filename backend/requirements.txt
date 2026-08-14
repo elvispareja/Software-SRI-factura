@@ -14,6 +14,11 @@ sqlalchemy==2.0.51
 # error de compilación de psycopg2, no un mensaje sobre versiones.
 psycopg[binary]>=3.2.2
 
+# Zona horaria: ZoneInfo("America/Guayaquil") necesita la base de datos de
+# zonas, que python:3.12-slim no trae. Sin esto, las fechas de emisión rompen
+# en el contenedor con ZoneInfoNotFoundError.
+tzdata==2025.2
+
 # Motor SRI
 lxml==6.1.1
 cryptography==50.0.0

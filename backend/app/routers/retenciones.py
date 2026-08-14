@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import date
-
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from ..base_datos import obtener_sesion
+from ..fecha_ec import hoy_ec
 from ..esquemas import RespuestaEmisionRetencion, RetencionEntrada, RetencionSalida
 from ..modelos_db import DetalleRetencion, Empresa, Receptor, Retencion
 from ..servicios.emision import ErrorEmision, consultar_autorizacion
@@ -108,7 +107,14 @@ def crear_retencion(datos: RetencionEntrada, sesion: Session = Depends(obtener_s
             "La retención se emite a un proveedor.",
         )
 
-    fecha_emision = datos.fecha_emision or date.today()
+    hoy = hoy_ec()
+    fecha_emision = datos.fecha_emision or hoy
+    if fecha_emision > hoy:
+        raise HTTPException(
+            422,
+            "La fecha de emisión no puede ser futura respecto a la fecha "
+            f"actual en Ecuador ({hoy:%d/%m/%Y}).",
+        )
     periodo = datos.periodo_fiscal or f"{fecha_emision:%m/%Y}"
 
     punto = buscar_punto_emision(
@@ -170,6 +176,15 @@ def anular_retencion(retencion_id: int, sesion: Session = Depends(obtener_sesion
     if retencion.estado_sri == "Autorizado":
         raise HTTPException(
             409, "Una retención autorizada se anula ante el SRI, no desde aquí."
+        )
+
+    # "Pendiente" significa que el SRI ya la recibió y aún puede autorizarla:
+    # hay que consultar su estado antes de anularla.
+    if retencion.estado_sri == "Pendiente":
+        raise HTTPException(
+            409,
+            "La retención está Pendiente en el SRI y podría autorizarse. "
+            "Consulta su estado antes de anularla.",
         )
 
     retencion.estado_sri = "Anulado"

@@ -39,7 +39,13 @@ from ..modelos_db import (
 from ..sri.modelos import PORCENTAJES_IVA, redondear
 
 # Comprobantes que representan una venta declarable.
-TIPOS_VENTA = ("Factura", "Nota de Venta", "Liquidación de Compra")
+#
+# La "Liquidación de Compra" NO va aquí: pese a compartir tabla y estructura
+# con la factura, documenta una COMPRA a alguien que no puede facturar, no un
+# ingreso. Contarla como venta inflaba los ingresos y el IVA en ventas del
+# panel y de los reportes. Su lado (cuentas por pagar / egresos) se computa en
+# los reportes de compras.
+TIPOS_VENTA = ("Factura", "Nota de Venta")
 
 # Estado que un comprobante debe tener para contar en un reporte tributario.
 ESTADO_DECLARABLE = "Autorizado"

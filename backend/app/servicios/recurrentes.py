@@ -21,6 +21,7 @@ from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from ..fecha_ec import hoy_ec
 from ..modelos_db import Comprobante, DetalleComprobante, Empresa, PlantillaRecurrente
 from ..sri.modelos import Detalle, redondear
 from .secuenciales import buscar_punto_emision, formatear_numero, reservar_secuencial
@@ -99,7 +100,7 @@ def emitir_desde_plantilla(
     al SRI. Así el usuario puede revisarlo antes, que es lo que hace falta
     cuando el importe cambió o el cliente se dio de baja.
     """
-    hoy = hoy or date.today()
+    hoy = hoy or hoy_ec()
 
     if not plantilla.activa:
         raise ErrorRecurrente(f"La plantilla «{plantilla.nombre}» está desactivada.")

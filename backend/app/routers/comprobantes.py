@@ -10,7 +10,7 @@ liquidación) se aplican en `_validar_por_tipo`.
 
 from __future__ import annotations
 
-from datetime import date
+import re
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from fastapi.responses import StreamingResponse
@@ -18,6 +18,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from ..base_datos import obtener_sesion
+from ..fecha_ec import hoy_ec
 from ..seguridad import administrador_actual
 from ..esquemas import (
     ComprobanteEntrada,
@@ -100,6 +101,15 @@ def _validar_por_tipo(datos: ComprobanteEntrada, receptor: Receptor) -> None:
                 f"Faltan: {', '.join(faltantes)}.",
             )
 
+        # El número del documento modificado debe venir en el formato del SRI
+        # (EEE-PPP-NNNNNNNNN); cualquier otro lo rechazaría al emitir.
+        if not re.fullmatch(r"\d{3}-\d{3}-\d{9}", datos.num_doc_modificado or ""):
+            raise HTTPException(
+                422,
+                "El número del documento modificado debe tener el formato "
+                "EEE-PPP-NNNNNNNNN (p. ej. 001-001-000000135).",
+            )
+
     if datos.tipo == "Liquidación de Compra" and receptor.rol != "Proveedor":
         raise HTTPException(
             422,
@@ -111,6 +121,67 @@ def _validar_por_tipo(datos: ComprobanteEntrada, receptor: Receptor) -> None:
     if datos.tipo in TIPOS_ELECTRONICOS and not receptor.direccion:
         raise HTTPException(
             422, "El receptor no tiene dirección, obligatoria para el XML del SRI."
+        )
+
+
+# codDocModificado (tabla 4 del SRI) → tipos internos que una nota puede
+# referenciar. El "03" es ambiguo (nota de venta o liquidación), así que cubre
+# ambos.
+_TIPOS_POR_COD_MODIFICADO = {
+    "01": ("Factura",),
+    "03": ("Nota de Venta", "Liquidación de Compra"),
+    "04": ("Nota de Crédito",),
+    "05": ("Nota de Débito",),
+}
+
+
+def _validar_nota_contra_original(
+    sesion: Session,
+    datos: ComprobanteEntrada,
+    receptor: Receptor,
+    importe_nota,
+) -> None:
+    """
+    Verificación cruzada, best-effort, de una nota contra su documento original.
+
+    Solo se aplica cuando el documento referenciado consta en esta base y está
+    **Autorizado**. Una nota puede referenciar legítimamente un documento
+    externo (emitido por otro sistema o en papel) que aquí no existe; en ese
+    caso no se bloquea, solo se omite la verificación cruzada. Cuando el
+    original sí está y está autorizado, se exige que sea del mismo receptor y
+    que la nota no lo exceda en importe.
+    """
+    if datos.tipo not in TIPOS_NOTA:
+        return
+
+    tipos_posibles = _TIPOS_POR_COD_MODIFICADO.get(datos.cod_doc_modificado or "")
+    if not tipos_posibles:
+        return
+
+    original = sesion.scalar(
+        select(Comprobante).where(
+            Comprobante.numero == datos.num_doc_modificado,
+            Comprobante.tipo.in_(tipos_posibles),
+            Comprobante.estado_sri == "Autorizado",
+        )
+    )
+    if original is None:
+        # No consta autorizado aquí: puede ser un documento externo. No se
+        # fuerza su existencia para no bloquear ese caso legítimo.
+        return
+
+    if original.receptor_identificacion != receptor.identificacion:
+        raise HTTPException(
+            422,
+            "El documento que la nota modifica pertenece a otro receptor "
+            f"({original.receptor_razon_social}).",
+        )
+
+    if importe_nota > original.importe_total:
+        raise HTTPException(
+            422,
+            f"El importe de la nota ({importe_nota}) excede el del documento "
+            f"modificado ({original.importe_total}).",
         )
 
 
@@ -231,6 +302,15 @@ def crear_comprobante(datos: ComprobanteEntrada, sesion: Session = Depends(obten
 
     _validar_por_tipo(datos, receptor)
 
+    hoy = hoy_ec()
+    fecha_emision = datos.fecha_emision or hoy
+    if fecha_emision > hoy:
+        raise HTTPException(
+            422,
+            "La fecha de emisión no puede ser futura respecto a la fecha "
+            f"actual en Ecuador ({hoy:%d/%m/%Y}).",
+        )
+
     punto = buscar_punto_emision(
         sesion, empresa.id, datos.establecimiento, datos.punto_emision
     )
@@ -242,7 +322,7 @@ def crear_comprobante(datos: ComprobanteEntrada, sesion: Session = Depends(obten
         establecimiento=datos.establecimiento,
         punto_emision=datos.punto_emision,
         secuencial=secuencial,
-        fecha_emision=datos.fecha_emision or date.today(),
+        fecha_emision=fecha_emision,
         receptor_id=receptor.id,
         receptor_razon_social=receptor.razon_social,
         receptor_identificacion=receptor.identificacion,
@@ -310,6 +390,9 @@ def crear_comprobante(datos: ComprobanteEntrada, sesion: Session = Depends(obten
     comprobante.total_iva = resumen.total_iva
     comprobante.importe_total = resumen.importe_total
 
+    # Ya con el importe calculado se puede contrastar la nota contra su original.
+    _validar_nota_contra_original(sesion, datos, receptor, resumen.importe_total)
+
     sesion.add(comprobante)
     sesion.commit()
     sesion.refresh(comprobante)
@@ -345,6 +428,18 @@ def anular_comprobante(
         raise HTTPException(
             409,
             "Un comprobante autorizado no se anula: emite una nota de crédito para revertirlo.",
+        )
+
+    # Un electrónico en "Pendiente" ya fue recibido por el SRI y puede
+    # autorizarse minutos después: anularlo aquí dejaría la contabilidad y el
+    # SRI en desacuerdo. Hay que consultar su estado primero.
+    # (La cotización usa "Pendiente" como estado inicial sin pasar por el SRI,
+    # por eso el bloqueo se limita a los tipos electrónicos.)
+    if comprobante.estado_sri == "Pendiente" and comprobante.tipo in TIPOS_ELECTRONICOS:
+        raise HTTPException(
+            409,
+            "El comprobante está Pendiente en el SRI y podría autorizarse. "
+            "Consulta su estado antes de anularlo.",
         )
 
     comprobante.estado_sri = "Anulado"

@@ -262,6 +262,9 @@ def cliente_web(tmp_path_factory):
     os.environ["URL_BASE_DATOS"] = f"sqlite:///{base}"
     os.environ["WHATSAPP_SECRETO_APP"] = "secreto-de-prueba"
     os.environ["WHATSAPP_TOKEN_VERIFICACION"] = "token-de-prueba"
+    # La allowlist es FAIL-CLOSED: sin este env var, _procesar rechazaría a
+    # todos los remitentes de estas pruebas. Se autoriza el número usado abajo.
+    os.environ["WHATSAPP_TELEFONOS_AUTORIZADOS"] = "593999,593000"
 
     for modulo in list(sys.modules):
         if modulo.startswith("app"):
@@ -419,7 +422,7 @@ def test_audio_sin_media_id_pide_reenviar(cliente_web, monkeypatch):
     monkeypatch.setattr(wa, "enviar_mensaje", lambda destino, texto: enviados.append(texto))
     monkeypatch.setattr(wa, "atender_mensaje", lambda *a, **k: (_ for _ in ()).throw(AssertionError))
 
-    wa._procesar({"from": "593999", "type": "audio", "audio": {}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "audio", "audio": {}})
 
     assert len(enviados) == 1
     assert "no pude obtener el audio" in enviados[0].lower()
@@ -432,7 +435,7 @@ def test_audio_sin_descarga_avisa(cliente_web, monkeypatch):
     monkeypatch.setattr(wa, "enviar_mensaje", lambda destino, texto: enviados.append(texto))
     monkeypatch.setattr(wa, "_descargar_media", lambda media_id: (None, None))
 
-    wa._procesar({"from": "593999", "type": "audio", "audio": {"id": "m1"}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "audio", "audio": {"id": "m1"}})
 
     assert "no pude descargar el audio" in enviados[0].lower()
 
@@ -446,7 +449,7 @@ def test_audio_sin_transcripcion_avisa_configuracion(cliente_web, monkeypatch):
     monkeypatch.setattr(wa, "_descargar_media", lambda media_id: (b"audio-falso", "audio/ogg"))
     monkeypatch.setattr(wa, "_transcribir_audio", lambda audio_bytes, mime: None)
 
-    wa._procesar({"from": "593999", "type": "audio", "audio": {"id": "m1"}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "audio", "audio": {"id": "m1"}})
 
     assert "no configurada" in enviados[0].lower()
     assert "OPENAI_API_KEY" in enviados[0]
@@ -467,7 +470,7 @@ def test_audio_transcrito_llega_marcado_al_orquestador(cliente_web, monkeypatch)
 
     monkeypatch.setattr(wa, "atender_mensaje", atender_falso)
 
-    wa._procesar({"from": "593999", "type": "voice", "voice": {"id": "m1"}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "voice", "voice": {"id": "m1"}})
 
     assert llamadas == [("593999", "factura para Juan", True, False)]
     assert enviados == ["Entendido"]
@@ -479,7 +482,7 @@ def test_imagen_sin_media_id_pide_reenviar(cliente_web, monkeypatch):
     enviados = []
     monkeypatch.setattr(wa, "enviar_mensaje", lambda destino, texto: enviados.append(texto))
 
-    wa._procesar({"from": "593999", "type": "image", "image": {}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "image", "image": {}})
 
     assert "no pude obtener la imagen" in enviados[0].lower()
 
@@ -493,7 +496,7 @@ def test_imagen_sin_ocr_avisa_configuracion(cliente_web, monkeypatch):
     monkeypatch.setattr(wa, "_descargar_media", lambda media_id: (b"imagen-falsa", "image/jpeg"))
     monkeypatch.setattr(wa, "_ocr_imagen", lambda imagen_bytes, mime: None)
 
-    wa._procesar({"from": "593999", "type": "image", "image": {"id": "m1"}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "image", "image": {"id": "m1"}})
 
     assert "no configurado" in enviados[0].lower()
     assert "ANTHROPIC_API_KEY" in enviados[0]
@@ -513,7 +516,7 @@ def test_imagen_con_ocr_llega_marcada_al_orquestador(cliente_web, monkeypatch):
 
     monkeypatch.setattr(wa, "atender_mensaje", atender_falso)
 
-    wa._procesar({"from": "593999", "type": "image", "image": {"id": "m1"}}, sesion=None)
+    wa._procesar({"from": "593999", "type": "image", "image": {"id": "m1"}})
 
     assert llamadas == [("593999", "RUC: 1790016919001", False, True)]
 
@@ -524,6 +527,33 @@ def test_tipo_no_soportado_explica_los_formatos_aceptados(cliente_web, monkeypat
     enviados = []
     monkeypatch.setattr(wa, "enviar_mensaje", lambda destino, texto: enviados.append(texto))
 
-    wa._procesar({"from": "593999", "type": "sticker"}, sesion=None)
+    wa._procesar({"from": "593999", "type": "sticker"})
 
     assert "texto, audio e imágenes" in enviados[0]
+
+
+def test_remitente_no_autorizado_no_llega_al_orquestador(cliente_web, monkeypatch):
+    """
+    La firma HMAC de Meta solo prueba el origen, no la identidad. Un número
+    fuera de la allowlist recibe un mensaje neutro y nunca toca el orquestador
+    (que emitiría comprobantes reales).
+    """
+    import app.routers.whatsapp as wa
+
+    enviados = []
+    monkeypatch.setattr(wa, "enviar_mensaje", lambda destino, texto: enviados.append(texto))
+    monkeypatch.setattr(wa, "atender_mensaje", lambda *a, **k: (_ for _ in ()).throw(AssertionError))
+
+    wa._procesar({"from": "000000000", "type": "text", "text": {"body": "factura para Juan"}})
+
+    assert len(enviados) == 1
+    assert "no está autorizado" in enviados[0].lower()
+
+
+def test_allowlist_normaliza_espacios_y_signo_mas():
+    """El '+' y los espacios del formato E.164 no deben afectar la comparación."""
+    from app.routers.whatsapp import _remitente_autorizado
+
+    # '593999' está en la allowlist configurada por el fixture cliente_web,
+    # pero _remitente_autorizado no depende del fixture: normaliza ambos lados.
+    assert _remitente_autorizado("+593 999") == _remitente_autorizado("593999")

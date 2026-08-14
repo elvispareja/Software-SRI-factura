@@ -132,7 +132,12 @@ class Factura:
                 },
             )
             grupo["base_imponible"] = redondear(grupo["base_imponible"] + detalle.base_imponible)
-            grupo["valor"] = redondear(grupo["valor"] + detalle.valor_iva)
+
+        # El valor del grupo se calcula sobre la BASE AGRUPADA, no sumando los
+        # IVA ya redondeados por línea: sumar redondeos arrastra centavos y el
+        # grupo dejaría de cumplir valor = base_grupo x tarifa, que el SRI valida.
+        for grupo in grupos.values():
+            grupo["valor"] = redondear(grupo["base_imponible"] * grupo["tarifa"] / Decimal("100"))
 
         # Orden estable por código, para que el XML sea reproducible.
         return [grupos[codigo] for codigo in sorted(grupos)]
