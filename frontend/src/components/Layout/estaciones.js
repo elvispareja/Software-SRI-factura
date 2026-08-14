@@ -10,6 +10,22 @@ import { FileText, Receipt, ScrollText, Truck } from 'lucide-react';
 
 export const MAPA_WS = [
   {
+    // Debe ir ANTES de Facturas: la regex de Facturas (`/comprobantes/…`)
+    // también casaría estas rutas, y `resolverEstacion` devuelve la primera
+    // coincidencia. Así, estando en Notas, la cabecera dice Notas, no Facturas.
+    match: /^\/comprobantes\/(notas|nota-credito|nota-debito)(\/|$)/,
+    titulo: 'Notas de Crédito y Débito',
+    familia: 'COMPROBANTES',
+    rail: 'var(--ws-rail-facturas)',
+    Icon: FileText,
+    iconPath: 'M5 3h8l4 4v14H7ZM14.5 3v4H19',
+    meta: 'Modifican una factura ya emitida · SRI',
+    tabs: [
+      { label: 'Listado', to: '/comprobantes/notas' },
+      { label: 'Crear', to: '/comprobantes/nota-credito' },
+    ],
+  },
+  {
     match: /^\/comprobantes(\/|$)/,
     titulo: 'Facturas',
     familia: 'COMPROBANTES',
