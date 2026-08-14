@@ -342,12 +342,16 @@ export default function DocumentoVentaForm({
 
       {/* Solo visible según tab: 0=Documento ya arriba, 1=Receptor, 2=Productos, 3=Pago, 4=Notas */}
       <div className={styles.mainLayout} style={{ display: tabIdx === 1 || tabIdx === 2 || tabIdx === 3 ? 'grid' : 'none' }}>
-        <div className={styles.leftCol} style={{ display: tabIdx === 1 ? 'flex' : 'none' }}>
+        <div
+          className={styles.leftCol}
+          style={{ display: tabIdx === 1 || tabIdx === 2 || tabIdx === 3 ? 'flex' : 'none' }}
+        >
           {/* 1. Receptor */}
           <motion.div
             className={`${styles.sectionPanel} glass-panel`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            style={{ display: tabIdx === 1 ? 'block' : 'none' }}
           >
             <h3 className={styles.sectionTitle}>1. {etiquetaReceptor}</h3>
 
