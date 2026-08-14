@@ -1,0 +1,16 @@
+# Lo que NO debe entrar en la imagen Docker (evita hornear secretos y basura).
+# Sin esto, `COPY . .` metía el .env, la base .db y el .venv dentro de la imagen.
+
+.env
+.env.*
+*.db
+.venv/
+venv/
+backups/
+tests/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

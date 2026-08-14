@@ -31,16 +31,26 @@ from .modelos_db import Usuario
 CLAVE_SECRETA = os.getenv("CLAVE_SECRETA", "desarrollo-no-usar-en-produccion")
 ES_CLAVE_DE_DESARROLLO = CLAVE_SECRETA == "desarrollo-no-usar-en-produccion"
 
-# En producción (AMBIENTE == "2") es obligatorio definir CLAVE_SECRETA.
-# Se valida tanto al importar (fallo temprano si el proceso arranca mal
-# configurado) como vía función explícita para el ciclo de vida de FastAPI.
-if ES_CLAVE_DE_DESARROLLO and os.getenv("AMBIENTE") == "2":
+# En producción es obligatorio definir una CLAVE_SECRETA propia. Se considera
+# "producción" tanto AMBIENTE == "2" como COOKIE_SEGURA activo (esta última solo
+# se enciende detrás de HTTPS real): cualquiera de las dos señales, usando la
+# clave de ejemplo, aborta el arranque. En desarrollo (AMBIENTE=1 y cookie no
+# segura) no cambia nada. Se valida al importar (fallo temprano si el proceso
+# arranca mal configurado) y vía función para el ciclo de vida de FastAPI.
+def _es_entorno_produccion() -> bool:
+    return (
+        os.getenv("AMBIENTE") == "2"
+        or os.getenv("COOKIE_SEGURA", "").lower() == "true"
+    )
+
+
+if ES_CLAVE_DE_DESARROLLO and _es_entorno_produccion():
     raise RuntimeError("CLAVE_SECRETA obligatoria en producción")
 
 
 def validar_seguridad_produccion() -> None:
     """Llamar desde el ciclo de vida del API para fallar rápido en prod sin clave."""
-    if ES_CLAVE_DE_DESARROLLO and os.getenv("AMBIENTE") == "2":
+    if ES_CLAVE_DE_DESARROLLO and _es_entorno_produccion():
         raise RuntimeError("CLAVE_SECRETA obligatoria en producción")
 
 HORAS_VIGENCIA_TOKEN = int(os.getenv("HORAS_VIGENCIA_TOKEN", "12"))

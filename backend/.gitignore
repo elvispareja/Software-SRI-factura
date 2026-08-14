@@ -3,6 +3,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
+# Bases SQLite locales: la app usa PostgreSQL; ningún .db debe versionarse
+# (puede arrastrar certificados y datos dentro del binario).
+*.db
+
 # NUNCA versionar certificados ni sus contraseñas
 certificados/
 *.p12

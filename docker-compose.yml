@@ -1,6 +1,12 @@
 # Fase 3-A — Postgres + API + Web
 # Levanta todo con: docker compose up --build
 # Requiere .env en la raíz (copia .env.example y completa CLAVE_SECRETA en prod).
+#
+# PARA PRODUCCIÓN, define en el .env (NO uses los valores de ejemplo):
+#   - CLAVE_SECRETA: una cadena larga y única (con AMBIENTE=2 el arranque aborta
+#     si sigue siendo la de ejemplo).
+#   - POSTGRES_PASSWORD: una contraseña fuerte (la de por defecto es solo dev).
+#   - AMBIENTE=2  y  COOKIE_SEGURA=true (esta última exige servir por HTTPS).
 
 services:
   db:
@@ -16,7 +22,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-factoa}
       POSTGRES_DB: ${POSTGRES_DB:-factoa}
     ports:
-      - "5432:5432"
+      # Atado a localhost: la BD sigue accesible desde la propia máquina
+      # (pgAdmin/DBeaver, o un backend fuera de Docker) pero NO queda expuesta
+      # a toda la red. Antes era "5432:5432", visible para cualquiera en la LAN.
+      - "127.0.0.1:5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
