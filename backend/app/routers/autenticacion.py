@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..base_datos import obtener_sesion
@@ -49,6 +50,16 @@ class UsuarioSalida(BaseModel):
     rol: str
 
     model_config = {"from_attributes": True}
+
+
+class ActualizacionPerfil(BaseModel):
+    nombre: str = Field(min_length=1, max_length=200)
+    correo: EmailStr
+    # La contraseña actual se exige siempre: es la prueba de que quien edita es
+    # el dueño de la cuenta y no una sesión secuestrada.
+    contrasena_actual: str
+    # Opcional: solo si se quiere cambiar la clave.
+    contrasena_nueva: str | None = None
 
 
 @router.post("/registro", response_model=UsuarioSalida, status_code=201)
@@ -166,4 +177,70 @@ def cerrar_sesion(respuesta: Response):
 
 @router.get("/yo", response_model=UsuarioSalida)
 def perfil(usuario: Usuario = Depends(usuario_actual)):
+    return usuario
+
+
+@router.put("/perfil", response_model=UsuarioSalida)
+def actualizar_perfil(
+    datos: ActualizacionPerfil,
+    respuesta: Response,
+    usuario: Usuario = Depends(usuario_actual),
+    sesion: Session = Depends(obtener_sesion),
+):
+    """
+    Edita el nombre, el correo y —opcionalmente— la contraseña del usuario.
+
+    La contraseña actual se verifica siempre: sin ella no se toca nada, aunque
+    haya sesión. Cambiar el correo obliga a reemitir la cookie, porque el `sub`
+    del token es justamente el correo y el viejo dejaría de resolver al usuario.
+    """
+    if not verificar_contrasena(datos.contrasena_actual, usuario.contrasena_hash):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, "La contraseña actual no es correcta."
+        )
+
+    correo_nuevo = datos.correo.lower()
+    correo_cambia = correo_nuevo != usuario.correo
+
+    # El índice único de `correo` protege contra la carrera; esta comprobación
+    # da un 409 legible en el caso normal en vez de esperar al IntegrityError.
+    if correo_cambia:
+        ocupado = sesion.scalar(
+            select(Usuario).where(
+                Usuario.correo == correo_nuevo, Usuario.id != usuario.id
+            )
+        )
+        if ocupado is not None:
+            raise HTTPException(409, "Ya existe una cuenta con ese correo.")
+
+    if datos.contrasena_nueva is not None:
+        if len(datos.contrasena_nueva) < LONGITUD_MINIMA_CONTRASENA:
+            raise HTTPException(
+                422,
+                f"La contraseña debe tener al menos {LONGITUD_MINIMA_CONTRASENA} caracteres.",
+            )
+        usuario.contrasena_hash = cifrar_contrasena(datos.contrasena_nueva)
+
+    usuario.nombre = datos.nombre
+    usuario.correo = correo_nuevo
+
+    try:
+        sesion.commit()
+    except IntegrityError as error:
+        sesion.rollback()
+        raise HTTPException(409, "Ya existe una cuenta con ese correo.") from error
+    sesion.refresh(usuario)
+
+    if correo_cambia:
+        token = crear_token(usuario.correo, {"rol": usuario.rol, "nombre": usuario.nombre})
+        respuesta.set_cookie(
+            key=NOMBRE_COOKIE,
+            value=token,
+            httponly=True,
+            secure=COOKIE_SEGURA,
+            samesite=COOKIE_SAMESITE,
+            max_age=HORAS_VIGENCIA_TOKEN * 3600,
+            path="/",
+        )
+
     return usuario

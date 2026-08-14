@@ -93,7 +93,7 @@ export default function ReceptoresList() {
       align: 'right',
       render: (r) => (
         <span className={styles.celdaAcciones}>
-          <button type="button" className={styles.btnIconoTabla} aria-label={`Ver ${r.razonSocial}`}><Eye size={16} /></button>
+          <button type="button" onClick={() => navigate(`/receptores/${r.id}/editar`)} className={styles.btnIconoTabla} aria-label={`Ver ${r.razonSocial}`}><Eye size={16} /></button>
           <span className={styles.envoltorioMenu}>
             <button
               type="button"

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, MoreVertical } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Eye } from 'lucide-react';
 import { RETENCIONES, ESTADOS_SRI } from '../../data/documentosCompra';
 import { useTablaFiltrada, VALOR_TODOS } from '../../hooks/useTablaFiltrada';
 import { useRecurso } from '../../hooks/useRecurso';
@@ -24,7 +24,6 @@ function claseEstado(estado) {
 }
 
 export default function RetencionesList() {
-  const navigate = useNavigate();
   const [termino, setTermino] = useState('');
   const [fEstado, setFEstado] = useState(VALOR_TODOS);
   const [fTrib, setFTrib] = useState(VALOR_TODOS);
@@ -62,7 +61,7 @@ export default function RetencionesList() {
     { key: 'estado', titulo: 'ESTADO', align: 'center', render: (r) => <span className={`${estilos.chip} ${claseEstado(r.estado)}`}>{r.estado}</span> },
     { key: 'trib', titulo: 'TRIBUTACIÓN', align: 'center', render: (_r) => <span className={`${estilos.chip} ${estilos.chipExito}`}>Aceptado</span> },
     { key: 'correo', titulo: 'CORREO', align: 'center', render: () => <span className={`${estilos.chip} ${estilos.chipExito}`}>enviado</span> },
-    { key: 'acciones', titulo: 'ACCIONES', align: 'center', render: (r) => <span className={estilos.acciones}><button onClick={() => navigate(`/retenciones/${r.id}`)} className={estilos.btnVer}><Eye size={16} /></button><button className={estilos.btnMas}><MoreVertical size={16} /></button></span> },
+    { key: 'acciones', titulo: 'ACCIONES', align: 'center', render: () => <span className={estilos.acciones}><button type="button" className={estilos.btnVer} disabled title="Detalle de retención no disponible"><Eye size={16} /></button></span> },
   ];
 
   return (

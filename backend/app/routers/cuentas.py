@@ -31,8 +31,10 @@ from ..esquemas import (
     ReporteRotacionCuentas,
     ReporteSaldosPendientes,
     ResumenCobros,
+    SaldoInicialEntrada,
+    SaldoInicialSalida,
 )
-from ..modelos_db import Comprobante, Cuota, Recibo
+from ..modelos_db import Comprobante, Cuota, Receptor, Recibo, SaldoInicial
 from ..servicios import reportes_cuentas as servicio_reportes
 from ..sri.modelos import redondear
 
@@ -842,3 +844,71 @@ def reporte_historial_csv(
         ],
         filas,
     )
+
+
+# --------------------------------------------------------------------------
+# Saldos iniciales (arrastre)
+#
+# Deuda anterior a Factoa que el usuario carga a mano. Vive aparte del cálculo
+# de saldos vivos para no arriesgar un doble conteo: la pantalla suma el saldo
+# anterior y el saldo vivo solo en el frontend.
+# --------------------------------------------------------------------------
+
+
+@router.get("/saldos-iniciales", response_model=list[SaldoInicialSalida])
+def listar_saldos_iniciales(
+    respuesta: Response,
+    sesion: Session = Depends(obtener_sesion),
+    tipo: str | None = None,
+):
+    consulta = select(SaldoInicial)
+    if tipo is not None:
+        consulta = consulta.where(SaldoInicial.tipo == _modo(tipo))
+
+    total = sesion.scalar(select(func.count()).select_from(consulta.subquery())) or 0
+    respuesta.headers["X-Total-Registros"] = str(total)
+
+    consulta = consulta.order_by(SaldoInicial.fecha.desc(), SaldoInicial.id.desc())
+    return sesion.scalars(consulta).all()
+
+
+@router.post("/saldos-iniciales", response_model=SaldoInicialSalida, status_code=201)
+def crear_saldo_inicial(
+    datos: SaldoInicialEntrada, sesion: Session = Depends(obtener_sesion)
+):
+    razon_social = datos.receptor_razon_social
+    identificacion = ""
+    receptor_id = None
+
+    # Si apunta a un receptor del catálogo, sus datos mandan sobre el texto libre.
+    if datos.receptor_id is not None:
+        receptor = sesion.get(Receptor, datos.receptor_id)
+        if receptor is None:
+            raise HTTPException(404, "El receptor indicado no existe.")
+        receptor_id = receptor.id
+        razon_social = receptor.razon_social
+        identificacion = receptor.identificacion
+
+    saldo = SaldoInicial(
+        receptor_id=receptor_id,
+        receptor_razon_social=razon_social,
+        identificacion=identificacion,
+        tipo=_modo(datos.tipo),
+        monto=redondear(datos.monto),
+        fecha=datos.fecha or date.today(),
+        detalle=datos.detalle,
+        documento=datos.documento,
+    )
+    sesion.add(saldo)
+    sesion.commit()
+    sesion.refresh(saldo)
+    return saldo
+
+
+@router.delete("/saldos-iniciales/{saldo_id}", status_code=204)
+def eliminar_saldo_inicial(saldo_id: int, sesion: Session = Depends(obtener_sesion)):
+    saldo = sesion.get(SaldoInicial, saldo_id)
+    if saldo is None:
+        raise HTTPException(404, "Saldo inicial no encontrado.")
+    sesion.delete(saldo)
+    sesion.commit()

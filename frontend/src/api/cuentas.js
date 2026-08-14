@@ -94,6 +94,43 @@ export const anularRecibo = (id) => api.crear(`/cuentas/recibos/${id}/anular`);
 
 
 // --------------------------------------------------------------------------
+// Saldos iniciales (arrastre)
+//
+// Deuda anterior a Factoa que se carga a mano. El backend la guarda en su
+// propia tabla y NO la mezcla con los saldos vivos: la pantalla los combina.
+// --------------------------------------------------------------------------
+
+export const saldoInicialDesdeApi = (registro) => ({
+  id: registro.id,
+  receptorId: registro.receptor_id ?? null,
+  nombre: registro.receptor_razon_social || '—',
+  identificacion: registro.identificacion || '—',
+  tipo: registro.tipo,
+  monto: numero(registro.monto),
+  fecha: registro.fecha,
+  detalle: registro.detalle ?? '',
+  documento: registro.documento ?? '',
+});
+
+export const cargarSaldosIniciales = (modo, opciones) =>
+  api.obtener('/cuentas/saldos-iniciales', { tipo: modoValido(modo) }, opciones);
+
+export const registrarSaldoInicial = (datos) =>
+  api.crear('/cuentas/saldos-iniciales', {
+    receptor_id: datos.receptorId ? Number(datos.receptorId) : null,
+    receptor_razon_social: datos.nombre || '',
+    tipo: modoValido(datos.tipo),
+    monto: String(datos.monto ?? '0'),
+    fecha: datos.fecha || null,
+    detalle: datos.detalle || '',
+    documento: datos.documento || '',
+  });
+
+export const eliminarSaldoInicial = (id) =>
+  api.eliminar(`/cuentas/saldos-iniciales/${id}`);
+
+
+// --------------------------------------------------------------------------
 // Reportes de cuentas pendientes
 //
 // Los cinco de la pestaña «Reportes», más el modo que decide qué se lee.

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Eye, MoreVertical, FileText } from 'lucide-react';
+import { Plus, Eye, FileText } from 'lucide-react';
 import { COMPROBANTES } from '../../data/comprobantes';
 import { useTablaFiltrada, VALOR_TODOS } from '../../hooks/useTablaFiltrada';
 import { useRecurso } from '../../hooks/useRecurso';
@@ -123,7 +123,6 @@ export default function ComprobantesList() {
       render: (r) => (
         <span className={estilos.acciones}>
           <button onClick={() => navigate(`/comprobantes/${r.id}`)} className={estilos.btnVer} title="Ver"><Eye size={16} /></button>
-          <button className={estilos.btnMas} title="Más"><MoreVertical size={16} /></button>
         </span>
       ),
     },

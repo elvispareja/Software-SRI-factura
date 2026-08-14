@@ -88,7 +88,6 @@ export default function Reportes() {
   const [anio, setAnio] = useState(ANIO_ACTUAL);
   const [mes, setMes] = useState(new Date().getMonth() + 1);
   const [formato, setFormato] = useState('Excel');
-  const [filtrarRango, setFiltrarRango] = useState(false);
 
   const hayCsv = !TABS_TOP.find((t) => t.id === topTab)?.sinCsv;
 
@@ -175,12 +174,6 @@ export default function Reportes() {
             );
           })}
         </div>
-        <label className={styles.toggleRow} onClick={() => setFiltrarRango((v) => !v)}>
-          <span className={styles.toggleTrack} data-activo={filtrarRango ? 'true' : 'false'}>
-            <span className={styles.toggleKnob} style={{ left: filtrarRango ? '21px' : '3px' }} />
-          </span>
-          Filtrar por rango de fechas
-        </label>
       </div>
 
       {topTab === 'comprobantes' && <TabComprobantes anio={anio} mes={mes} formato={formato} />}

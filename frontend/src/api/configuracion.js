@@ -166,6 +166,20 @@ export const usuarioDesdeApi = (registro) => ({
   activo: registro.activo,
 });
 
+/**
+ * Edita el perfil del usuario en sesión.
+ *
+ * La contraseña actual es obligatoria (la exige el backend); la nueva es
+ * opcional y viaja como null si no se cambia.
+ */
+export const actualizarPerfil = ({ nombre, correo, contrasenaActual, contrasenaNueva }) =>
+  api.actualizar('/auth/perfil', {
+    nombre,
+    correo,
+    contrasena_actual: contrasenaActual,
+    contrasena_nueva: contrasenaNueva || null,
+  });
+
 export const crearEnLista = (tipo, entrada) =>
   api.crear(`/configuracion/listas/${tipo}`, {
     nombre: entrada.nombre,

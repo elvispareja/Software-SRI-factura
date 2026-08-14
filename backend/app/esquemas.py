@@ -699,6 +699,28 @@ class AplicarAnticipo(Base):
         return valor
 
 
+class DevolverAnticipo(Base):
+    """
+    Devuelve el saldo sobrante de un anticipo.
+
+    Deliberadamente **sin monto**: el saldo lo calcula el servidor como
+    `monto - facturado`, para que la devolución no pueda descuadrar.
+    """
+
+    fecha: date | None = None
+    forma_pago: str = "Transferencia"
+    observacion: str | None = None
+
+
+class DevolucionAnticipoSalida(Base):
+    id: int
+    anticipo_id: int
+    fecha: date
+    monto: Decimal
+    forma_pago: str
+    observacion: str | None
+
+
 # --------------------------------------------------------------------------
 # Facturación recurrente
 # --------------------------------------------------------------------------
@@ -937,6 +959,42 @@ class ResumenCobros(Base):
     por_vencer_30: Decimal
     cuotas_vencidas: int
     cobrado_mes: Decimal
+
+
+# --------------------------------------------------------------------------
+# Saldos iniciales (arrastre)
+# --------------------------------------------------------------------------
+
+
+class SaldoInicialEntrada(Base):
+    # Opcional: el saldo puede cargarse a nombre de un receptor del catálogo o
+    # a nombre libre, escribiendo la razón social a mano.
+    receptor_id: int | None = None
+    receptor_razon_social: str = ""
+    tipo: str = "cobrar"
+    monto: Decimal = Field(default=Decimal("0"), ge=0)
+    fecha: date | None = None
+    detalle: str = ""
+    documento: str = ""
+
+    @field_validator("tipo")
+    @classmethod
+    def tipo_conocido(cls, valor: str) -> str:
+        if valor not in ("cobrar", "pagar"):
+            raise ValueError("El tipo de saldo debe ser 'cobrar' o 'pagar'.")
+        return valor
+
+
+class SaldoInicialSalida(Base):
+    id: int
+    receptor_id: int | None
+    receptor_razon_social: str
+    identificacion: str
+    tipo: str
+    monto: Decimal
+    fecha: date
+    detalle: str
+    documento: str
 
 
 # --------------------------------------------------------------------------

@@ -41,6 +41,7 @@ import { useRecurso } from '../../hooks/useRecurso';
 import { useSesion } from '../../auth/useSesion';
 import {
   actualizarEstablecimiento as actualizarEstablecimientoApi,
+  actualizarPerfil,
   crearCuenta,
   cuentaDesdeApi,
   crearEstablecimiento,
@@ -136,7 +137,7 @@ const PLACEHOLDER_LISTS = {
 };
 
 export default function Configuraciones() {
-  const { usuario } = useSesion();
+  const { usuario, actualizarUsuario } = useSesion();
   const [sec, setSec] = useState('perfil');
   const [pdfTab, setPdfTab] = useState('pdf');
   const [query, setQuery] = useState('');
@@ -145,6 +146,15 @@ export default function Configuraciones() {
   const [nuevaCuenta, setNuevaCuenta] = useState({ banco: '', numero: '', tipo: 'Corriente', titular: '' });
   const [bannerNombre, setBannerNombre] = useState('');
   const [bannerPreview, setBannerPreview] = useState(null);
+
+  const [perfil, setPerfil] = useState({
+    nombre: '',
+    correo: '',
+    contrasenaActual: '',
+    contrasenaNueva: '',
+    confirmar: '',
+  });
+  const [guardandoPerfil, setGuardandoPerfil] = useState(false);
 
   const [empresa, setEmpresa] = useState(EMPRESA_INICIAL);
   const [establecimientos, setEstablecimientos] = useState(ESTABLECIMIENTOS_INICIALES);
@@ -187,6 +197,63 @@ export default function Configuraciones() {
   }, [recursoFirma.datos, recursoFirma.usandoDemo]);
 
   const sinConexion = recursoEmpresa.usandoDemo;
+
+  // Precarga los datos editables del usuario en sesión. Solo el nombre y el
+  // correo: las contraseñas nunca vienen del servidor, se escriben aquí.
+  useEffect(() => {
+    setPerfil((actual) => ({
+      ...actual,
+      nombre: usuario?.nombre ?? '',
+      correo: usuario?.correo ?? '',
+    }));
+  }, [usuario?.nombre, usuario?.correo]);
+
+  const guardarPerfil = async () => {
+    setAviso(null);
+    if (!perfil.nombre.trim() || !perfil.correo.trim()) {
+      setAviso({ tono: 'error', texto: 'El nombre y el correo no pueden quedar vacíos.' });
+      return;
+    }
+    if (!perfil.contrasenaActual) {
+      setAviso({ tono: 'error', texto: 'Escribe tu contraseña actual para confirmar los cambios.' });
+      return;
+    }
+    if (perfil.contrasenaNueva) {
+      if (perfil.contrasenaNueva.length < 8) {
+        setAviso({ tono: 'error', texto: 'La nueva contraseña debe tener al menos 8 caracteres.' });
+        return;
+      }
+      if (perfil.contrasenaNueva !== perfil.confirmar) {
+        setAviso({ tono: 'error', texto: 'La nueva contraseña y su confirmación no coinciden.' });
+        return;
+      }
+    }
+
+    setGuardandoPerfil(true);
+    try {
+      const { datos } = await actualizarPerfil({
+        nombre: perfil.nombre.trim(),
+        correo: perfil.correo.trim(),
+        contrasenaActual: perfil.contrasenaActual,
+        contrasenaNueva: perfil.contrasenaNueva || null,
+      });
+      // Refresca la cabecera (nombre/correo) sin re-consultar al servidor.
+      actualizarUsuario({ nombre: datos.nombre, correo: datos.correo });
+      setPerfil((actual) => ({
+        ...actual,
+        nombre: datos.nombre,
+        correo: datos.correo,
+        contrasenaActual: '',
+        contrasenaNueva: '',
+        confirmar: '',
+      }));
+      setAviso({ tono: 'ok', texto: 'Perfil actualizado.' });
+    } catch (error) {
+      setAviso({ tono: 'error', texto: error.message });
+    } finally {
+      setGuardandoPerfil(false);
+    }
+  };
 
   const agregarCuenta = async () => {
     if (!nuevaCuenta.banco || !nuevaCuenta.numero) {
@@ -422,20 +489,68 @@ export default function Configuraciones() {
                     </div>
                   </div>
                   <div className={styles.perfilFields}>
-                    <PerfilField label="Nombre" value={usuario?.nombre ?? 'EMISOR DEMO EJEMPLO'} />
-                    <PerfilField label="Contraseña actual" value="••••••••" badge eye />
-                    <PerfilField label="Correo electrónico" value={usuario?.correo ?? 'correo@empresademo.ec'} disabled={false} />
-                    <PerfilField label="Nueva contraseña (opcional)" value="" eye placeholder="••••••••" />
-                    <PerfilField label="Miembro desde" value="2025-08-13" disabled />
-                    <PerfilField label="Confirmar contraseña (opcional)" value="" eye placeholder="••••••••" />
+                    <div className={styles.fieldFloatWrap}>
+                      <span className={styles.floatLabel}>Nombre</span>
+                      <input
+                        className={styles.input}
+                        autoComplete="name"
+                        value={perfil.nombre}
+                        onChange={(e) => setPerfil((p) => ({ ...p, nombre: e.target.value }))}
+                      />
+                    </div>
+                    <div className={styles.fieldFloatWrap}>
+                      <span className={styles.floatLabel}>Contraseña actual</span>
+                      <input
+                        type="password"
+                        className={styles.input}
+                        autoComplete="current-password"
+                        placeholder="Requerida para guardar"
+                        value={perfil.contrasenaActual}
+                        onChange={(e) => setPerfil((p) => ({ ...p, contrasenaActual: e.target.value }))}
+                      />
+                    </div>
+                    <div className={styles.fieldFloatWrap}>
+                      <span className={styles.floatLabel}>Correo electrónico</span>
+                      <input
+                        type="email"
+                        className={styles.input}
+                        autoComplete="email"
+                        value={perfil.correo}
+                        onChange={(e) => setPerfil((p) => ({ ...p, correo: e.target.value }))}
+                      />
+                    </div>
+                    <div className={styles.fieldFloatWrap}>
+                      <span className={styles.floatLabel}>Nueva contraseña (opcional)</span>
+                      <input
+                        type="password"
+                        className={styles.input}
+                        autoComplete="new-password"
+                        placeholder="Mínimo 8 caracteres"
+                        value={perfil.contrasenaNueva}
+                        onChange={(e) => setPerfil((p) => ({ ...p, contrasenaNueva: e.target.value }))}
+                      />
+                    </div>
+                    <PerfilField label="Miembro desde" value="—" disabled />
+                    <div className={styles.fieldFloatWrap}>
+                      <span className={styles.floatLabel}>Confirmar contraseña (opcional)</span>
+                      <input
+                        type="password"
+                        className={styles.input}
+                        autoComplete="new-password"
+                        placeholder="Repite la nueva contraseña"
+                        value={perfil.confirmar}
+                        onChange={(e) => setPerfil((p) => ({ ...p, confirmar: e.target.value }))}
+                      />
+                    </div>
                   </div>
                   <div className={styles.cwoCardFoot}>
                     <button
                       className={styles.btnPrimary}
-                      disabled
-                      title="Edición de perfil — próximamente. Aún no se guarda en el servidor."
+                      onClick={guardarPerfil}
+                      disabled={guardandoPerfil}
                     >
-                      <Save size={15} /> Guardar Cambios
+                      {guardandoPerfil ? <Loader2 size={15} className={styles.girando} /> : <Save size={15} />}
+                      {guardandoPerfil ? 'Guardando…' : 'Guardar Cambios'}
                     </button>
                   </div>
                 </div>

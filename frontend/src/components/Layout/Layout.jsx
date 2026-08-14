@@ -487,8 +487,9 @@ export default function Layout() {
               <button
                 type="button"
                 className={styles.clusterBtnBell}
-                title="Notificaciones"
-                aria-label="Notificaciones"
+                title="Sin notificaciones"
+                aria-label="Sin notificaciones"
+                disabled
               >
                 <Bell size={21} strokeWidth={1.8} />
                 <span className={styles.badge}>0</span>

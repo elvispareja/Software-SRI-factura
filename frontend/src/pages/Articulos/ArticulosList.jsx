@@ -132,7 +132,7 @@ export default function ArticulosList() {
       align: 'right',
       render: (r) => (
         <span className={styles.celdaAcciones}>
-          <button type="button" className={styles.btnIconoTabla} aria-label={`Ver ${r.nombre}`}><Eye size={16} /></button>
+          <button type="button" onClick={() => navigate(`/articulos/${r.id}/editar`)} className={styles.btnIconoTabla} aria-label={`Ver ${r.nombre}`}><Eye size={16} /></button>
           <span className={styles.envoltorioMenu}>
             <button
               type="button"

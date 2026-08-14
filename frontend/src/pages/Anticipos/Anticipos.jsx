@@ -6,7 +6,9 @@ import {
   anticipoDesdeApi,
   anularAnticipo,
   aplicarAnticipo,
+  corregirAnticipo,
   crearAnticipo,
+  devolverAnticipo,
 } from '../../api/egresos';
 import { useRecurso } from '../../hooks/useRecurso';
 import { useCatalogos } from '../../hooks/useCatalogos';
@@ -56,6 +58,8 @@ export default function Anticipos() {
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
+  // null = crear un anticipo nuevo; un id = corregir ese anticipo.
+  const [modalEditId, setModalEditId] = useState(null);
   const [modalKind, setModalKind] = useState('recibido'); // 'recibido' = ARD, 'pagado' = APP
   const [modalFecha, setModalFecha] = useState(() => new Date().toISOString().slice(0, 10));
   const [modalRecep, setModalRecep] = useState('');
@@ -87,11 +91,31 @@ export default function Anticipos() {
   const totalMonto = useMemo(() => modalPagos.reduce((a, p) => a + (parseFloat(p.monto) || 0), 0), [modalPagos]);
 
   const abrirModal = () => {
+    setModalEditId(null);
     setModalKind('recibido');
     setModalFecha(new Date().toISOString().slice(0, 10));
     setModalRecep('');
     setModalObs('');
     setModalPagos([]);
+    setModalOpen(true);
+  };
+
+  // Abre el modal en modo corrección, precargando el anticipo. El monto se
+  // representa como una única forma de pago para reutilizar el mismo formulario.
+  const abrirCorregir = (anticipo) => {
+    setErrorAccion(null);
+    setModalEditId(anticipo.id);
+    setModalKind(anticipo.tipo === 'APP' ? 'pagado' : 'recibido');
+    setModalFecha(anticipo.fecha || new Date().toISOString().slice(0, 10));
+    setModalRecep(anticipo.receptor || '');
+    setModalObs(anticipo.detalle || '');
+    setModalPagos([
+      {
+        key: Date.now() + Math.random(),
+        label: anticipo.formaPago || 'Transferencia',
+        monto: String(anticipo.monto ?? '0'),
+      },
+    ]);
     setModalOpen(true);
   };
 
@@ -107,17 +131,21 @@ export default function Anticipos() {
     }
 
     setErrorAccion(null);
+    const datos = {
+      fecha: modalFecha,
+      tipo: modalKind === 'recibido' ? 'ARD' : 'APP',
+      detalle: modalObs || '',
+      monto: totalMonto,
+      // Las filas de pago traen `label`; `tipo` se conserva por si alguna vez lo
+      // trae, para no volver a fijar 'Transferencia' a ciegas como antes.
+      formaPago: modalPagos[0]?.tipo ?? modalPagos[0]?.label ?? 'Transferencia',
+    };
     try {
-      await crearAnticipo(
-        {
-          fecha: modalFecha,
-          tipo: modalKind === 'recibido' ? 'ARD' : 'APP',
-          detalle: modalObs || '',
-          monto: totalMonto,
-          formaPago: modalPagos[0]?.tipo ?? 'Transferencia',
-        },
-        receptor.id,
-      );
+      if (modalEditId) {
+        await corregirAnticipo(modalEditId, datos, receptor.id);
+      } else {
+        await crearAnticipo(datos, receptor.id);
+      }
       setModalOpen(false);
       recurso.recargar();
     } catch (fallo) {
@@ -135,6 +163,9 @@ export default function Anticipos() {
         // Se aplica el saldo entero: imputar una parte exige indicar contra qué
         // factura, y eso vive en el formulario de la factura, no aquí.
         await aplicarAnticipo(id, anticipo.saldo);
+      } else if (accion === 'devolver') {
+        // El servidor calcula el saldo a devolver; aquí no se manda monto.
+        await devolverAnticipo(id, {});
       }
       recurso.recargar();
     } catch (fallo) {
@@ -209,8 +240,8 @@ export default function Anticipos() {
           <div style={{ fontWeight: 700, marginTop: 2 }}>Acciones disponibles según el estado del anticipo:</div>
           <ul className={styles.infoList}>
             <li><strong>Anular</strong> — cancela un anticipo <em>Pendiente</em> que nunca se aplicó.</li>
-            <li><strong>Devolver</strong> — aparece cuando el anticipo fue aplicado <em>parcialmente</em> (estado &ldquo;residuo pendiente&rdquo;). Genera asiento por el saldo sobrante.</li>
-            <li><strong>Corregir</strong> — modifica monto o cuentas de un anticipo <em>Pendiente</em> ya contabilizado.</li>
+            <li><strong>Devolver</strong> — registra la devolución del saldo sobrante de un anticipo <em>Pendiente</em> o <em>Parcial</em>. El servidor calcula el monto (monto menos facturado).</li>
+            <li><strong>Corregir</strong> — modifica la fecha, el monto o el detalle de un anticipo con saldo (<em>Pendiente</em> o <em>Parcial</em>).</li>
           </ul>
         </div>
       </div>
@@ -218,10 +249,10 @@ export default function Anticipos() {
       <div className={styles.cardTable}>
         <div className={styles.tableWrap}>
           <table className={styles.table}>
-            <thead><tr><th>#</th><th>FECHA</th><th>TIPO</th><th>RECEPTOR</th><th>DETALLE</th><th style={{ textAlign: 'right' }}>MONTO</th><th style={{ textAlign: 'right' }}>MONTO FACTURADO</th><th style={{ textAlign: 'right' }}>SALDO</th><th>ESTADO</th><th>ASIENTO</th><th style={{ textAlign: 'center' }}>ACCIONES</th></tr></thead>
+            <thead><tr><th>#</th><th>FECHA</th><th>TIPO</th><th>RECEPTOR</th><th>DETALLE</th><th style={{ textAlign: 'right' }}>MONTO</th><th style={{ textAlign: 'right' }}>MONTO FACTURADO</th><th style={{ textAlign: 'right' }}>SALDO</th><th>ESTADO</th><th style={{ textAlign: 'center' }}>ACCIONES</th></tr></thead>
             <tbody>
               {tabla.visibles.length === 0 ? (
-                <tr><td colSpan={11} className={styles.emptyCell}>No hay anticipos con estos filtros.</td></tr>
+                <tr><td colSpan={10} className={styles.emptyCell}>No hay anticipos con estos filtros.</td></tr>
               ) : tabla.visibles.map((r, i) => {
                 const saldo = r.monto - (r.facturado || 0);
                 const claseEstado = styles[CLASE_ESTADO[r.estado] ?? CLASE_ESTADO.Pendiente];
@@ -236,12 +267,17 @@ export default function Anticipos() {
                     <td className="cifra" style={{ textAlign: 'right' }}>{(r.facturado || 0).toFixed(2)}</td>
                     <td className="cifra" style={{ textAlign: 'right', fontWeight: 700 }}>{saldo.toFixed(2)}</td>
                     <td><span className={`${styles.chipEstado} ${claseEstado}`}>{r.estado}</span></td>
-                    <td className={styles.cellAsiento}>{r.asiento}</td>
                     <td style={{ textAlign: 'center' }}>
                       <div className={styles.accionesCell}>
-                        <button className={styles.btnAccion} title="Anular" onClick={() => accionAnticipo(r.id, 'anular')}>⊘</button>
-                        <button className={styles.btnAccion} title="Devolver — próximamente" disabled>↩</button>
-                        <button className={styles.btnAccion} title="Corregir — próximamente" disabled>✎</button>
+                        {r.estado === 'Pendiente' && (
+                          <button className={styles.btnAccion} title="Anular" onClick={() => accionAnticipo(r.id, 'anular')}>⊘</button>
+                        )}
+                        {(r.estado === 'Pendiente' || r.estado === 'Parcial') && saldo > 0 && (
+                          <button className={styles.btnAccion} title="Devolver saldo sobrante" onClick={() => accionAnticipo(r.id, 'devolver')}>↩</button>
+                        )}
+                        {(r.estado === 'Pendiente' || r.estado === 'Parcial') && (
+                          <button className={styles.btnAccion} title="Corregir" onClick={() => abrirCorregir(r)}>✎</button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -266,7 +302,7 @@ export default function Anticipos() {
             <button className={styles.modalClose} onClick={() => setModalOpen(false)}><X size={17} /></button>
             <div className={`${styles.modalHead} ${isRecibido ? styles.modalHeadRec : styles.modalHeadPag}`}>
               <span className={`${styles.modalIcon} ${isRecibido ? styles.modalIconRec : styles.modalIconPag}`}><Wallet size={22} /></span>
-              <div><div className={styles.modalTitle}>Nuevo Anticipo</div><div className={styles.modalSub}>{isRecibido ? 'Dinero recibido de un cliente antes de emitir la factura' : 'Pago anticipado a un proveedor sin factura emitida'}</div></div>
+              <div><div className={styles.modalTitle}>{modalEditId ? 'Corregir Anticipo' : 'Nuevo Anticipo'}</div><div className={styles.modalSub}>{isRecibido ? 'Dinero recibido de un cliente antes de emitir la factura' : 'Pago anticipado a un proveedor sin factura emitida'}</div></div>
             </div>
             <div className={styles.modalBody}>
               <div className={styles.kindGrid}>

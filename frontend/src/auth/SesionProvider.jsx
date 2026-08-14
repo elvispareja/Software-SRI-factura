@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ErrorApi, URL_API } from '../api/cliente';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ErrorApi, EVENTO_SESION_EXPIRADA, URL_API } from '../api/cliente';
 import { CLAVE_SESION, SesionContext } from './contexto';
 
 /**
@@ -37,6 +37,24 @@ export function SesionProvider({ children }) {
       // Sin persistencia la sesión dura lo que la pestaña.
     }
   }, []);
+
+  // Espejo de `usuario` para poder leerlo dentro del listener sin volver a
+  // suscribirlo en cada cambio de sesión.
+  const usuarioRef = useRef(usuario);
+  usuarioRef.current = usuario;
+
+  // Un 401 del servidor (`api/cliente.js`) significa que la sesión caducó: se
+  // limpia el estado local y las rutas protegidas mandan al login conservando
+  // el origen. En modo demostración no hay servidor detrás, así que se ignora
+  // para no expulsar de un recorrido sin backend.
+  useEffect(() => {
+    const alExpirar = () => {
+      if (usuarioRef.current?.modoDemo) return;
+      persistir(null);
+    };
+    window.addEventListener(EVENTO_SESION_EXPIRADA, alExpirar);
+    return () => window.removeEventListener(EVENTO_SESION_EXPIRADA, alExpirar);
+  }, [persistir]);
 
   // Al arrancar se revalida contra el servidor: la cookie pudo expirar
   // mientras la pestaña estaba cerrada, y aquí no hay forma de inspeccionarla.
@@ -129,6 +147,22 @@ export function SesionProvider({ children }) {
     persistir({ nombre: 'Usuario demo', correo: 'demo@local', rol: 'demo', modoDemo: true });
   }, [persistir]);
 
+  // Refresca en local los datos visibles del usuario (nombre, correo) tras
+  // editar el perfil, sin re-consultar al servidor: la cabecera y el saludo
+  // cambian al instante. Merge parcial para no perder `modoDemo` ni `rol`, y se
+  // persiste con la misma clave que usa `persistir`.
+  const actualizarUsuario = useCallback((cambios) => {
+    setUsuario((actual) => {
+      const combinado = { ...(actual ?? {}), ...cambios };
+      try {
+        localStorage.setItem(CLAVE_SESION, JSON.stringify(combinado));
+      } catch {
+        // Sin persistencia la sesión dura lo que la pestaña.
+      }
+      return combinado;
+    });
+  }, []);
+
   const cerrarSesion = useCallback(async () => {
     // Solo el servidor puede borrar una cookie HttpOnly.
     try {
@@ -147,9 +181,10 @@ export function SesionProvider({ children }) {
       iniciarSesion,
       registrar,
       entrarEnModoDemo,
+      actualizarUsuario,
       cerrarSesion,
     }),
-    [usuario, comprobando, iniciarSesion, registrar, entrarEnModoDemo, cerrarSesion],
+    [usuario, comprobando, iniciarSesion, registrar, entrarEnModoDemo, actualizarUsuario, cerrarSesion],
   );
 
   return <SesionContext.Provider value={valor}>{children}</SesionContext.Provider>;

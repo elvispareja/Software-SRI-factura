@@ -23,12 +23,16 @@ import {
   cargarHistorialContactos,
   cargarRecibosGenerados,
   cargarRotacionCuentas,
+  cargarSaldosIniciales,
   cargarSaldosPendientes,
+  eliminarSaldoInicial,
   historialContactosDesdeApi,
   modoValido,
   recibosGeneradosDesdeApi,
   registrarRecibo,
+  registrarSaldoInicial,
   rotacionCuentasDesdeApi,
+  saldoInicialDesdeApi,
   saldosPendientesDesdeApi,
   urlCsvCuentas,
 } from '../../api/cuentas';
@@ -182,6 +186,19 @@ export default function Cuentas() {
     [reporteHistorial.datos],
   );
 
+  // Saldos anteriores (arrastre): deuda previa a Factoa que se cargó a mano.
+  // Solo hace falta en la pestaña de Receptores, que es donde se listan y se
+  // registran; en las demás no se pide para no traer datos que nadie mira.
+  const traerSaldosIniciales = useCallback(
+    ({ senal }) => cargarSaldosIniciales(modo, { senal }),
+    [modo],
+  );
+  const reporteSaldosIniciales = useReporte(traerSaldosIniciales, { activo: tab === 'recep' });
+  const saldosIniciales = useMemo(
+    () => (reporteSaldosIniciales.datos ?? []).map(saldoInicialDesdeApi),
+    [reporteSaldosIniciales.datos],
+  );
+
   const cuotas = agenda?.cuotas ?? [];
   const movimientos = recibos?.recibos ?? [];
   const contactos = historial?.contactos ?? [];
@@ -254,7 +271,6 @@ export default function Cuentas() {
   const [sDoc, setSDoc] = useState('');
   const [sMonto, setSMonto] = useState('0');
   const [sDetalle, setSDetalle] = useState('');
-  const [saldosLocal, setSaldosLocal] = useState([]);
 
   // Saldos por receptor: los calcula el reporte de historial, que ya agrupa por
   // cliente o proveedor según el modo.
@@ -270,11 +286,35 @@ export default function Cuentas() {
     [contactos],
   );
 
-  const saldosCombinados = useMemo(() => {
-    // locales primero (registrados via modal), luego reales
-    const locales = saldosLocal.map((r) => ({ ...r, esLocal: true }));
-    return [...locales, ...saldosReales];
-  }, [saldosLocal, saldosReales]);
+  // Saldos anteriores: se muestran junto a los vivos, marcados como «anterior»
+  // y con su propia ✕ para borrarlos.
+  const saldosInicialesFilas = useMemo(
+    () =>
+      saldosIniciales.map((s) => ({
+        id: `inicial-${s.id}`,
+        saldoInicialId: s.id,
+        nombre: s.nombre,
+        tipo: tipoIdentificacion(s.identificacion),
+        ident: s.identificacion,
+        saldo: s.monto.toFixed(2),
+        esInicial: true,
+      })),
+    [saldosIniciales],
+  );
+
+  const saldosCombinados = useMemo(
+    () => [...saldosInicialesFilas, ...saldosReales],
+    [saldosInicialesFilas, saldosReales],
+  );
+
+  // Total combinado (saldo anterior + saldo vivo). Se calcula solo en el
+  // frontend: el backend no mezcla las dos fuentes para no arriesgar un doble
+  // conteo.
+  const totalCombinado = useMemo(() => {
+    const vivo = saldosReales.reduce((t, r) => t + (parseFloat(r.saldo) || 0), 0);
+    const anterior = saldosIniciales.reduce((t, s) => t + s.monto, 0);
+    return vivo + anterior;
+  }, [saldosReales, saldosIniciales]);
 
   const saldosFiltrados = useMemo(() => {
     const q = recepQuery.trim().toLowerCase();
@@ -288,19 +328,34 @@ export default function Cuentas() {
     setSearchParams({ tipo });
   };
 
-  const guardarSaldo = () => {
+  const guardarSaldo = async () => {
     if (!sCli || !sFecha || !sDetalle.trim()) return;
-    const rec = {
-      id: Date.now(),
-      nombre: sCli,
-      tipo: 'RUC',
-      ident: '—',
-      saldo: (parseFloat(sMonto) || 0).toFixed(2),
-      esLocal: true,
-    };
-    setSaldosLocal((prev) => [rec, ...prev]);
-    setSaldoModal(false);
-    setSCli(''); setSFecha(''); setSDoc(''); setSMonto('0'); setSDetalle('');
+    setErrorCobro(null);
+    try {
+      await registrarSaldoInicial({
+        nombre: sCli,
+        tipo: modo,
+        monto: parseFloat(sMonto) || 0,
+        fecha: sFecha,
+        detalle: sDetalle,
+        documento: sDoc,
+      });
+      setSaldoModal(false);
+      setSCli(''); setSFecha(''); setSDoc(''); setSMonto('0'); setSDetalle('');
+      reporteSaldosIniciales.recargar();
+    } catch (fallo) {
+      setErrorCobro(fallo.message);
+    }
+  };
+
+  const borrarSaldoInicial = async (id) => {
+    setErrorCobro(null);
+    try {
+      await eliminarSaldoInicial(id);
+      reporteSaldosIniciales.recargar();
+    } catch (fallo) {
+      setErrorCobro(fallo.message);
+    }
   };
 
   // KPIs: el saldo global sale del reporte de saldos (deuda viva por documento)
@@ -484,6 +539,17 @@ export default function Cuentas() {
             </div>
           </div>
 
+          <div className={styles.mesLabelRow}>
+            <div className={styles.mesLabel}>
+              Saldo pendiente total (anterior + vivo): {formatearMoneda(totalCombinado)}
+            </div>
+            {saldosIniciales.length > 0 && (
+              <span className={styles.badgeMuted}>
+                {saldosIniciales.length} {saldosIniciales.length === 1 ? 'saldo anterior' : 'saldos anteriores'}
+              </span>
+            )}
+          </div>
+
           <Estado reporte={reporteHistorial} columnas={5}>
             <div className={styles.tableWrap}>
               <table className={styles.table}>
@@ -492,7 +558,17 @@ export default function Cuentas() {
                   {tablaSaldos.visibles.length === 0 ? (
                     <tr><td colSpan={5} className={styles.emptyCell}>{modoCobrar ? 'Aún no hay clientes con saldo pendiente. Las ventas a crédito aparecerán aquí automáticamente.' : 'Aún no hay proveedores con saldo pendiente.'}</td></tr>
                   ) : tablaSaldos.visibles.map((r) => (
-                    <tr key={r.id}><td className={styles.cellStrong}>{r.nombre} {r.esLocal && <span className={styles.badgeLocal}>local</span>}</td><td>{r.tipo}</td><td className="cifra">{r.ident}</td><td className={`cifra ${styles.cellFuerte}`}>{r.saldo}</td><td><button className={styles.btnMenu} title="Acciones">⋮</button></td></tr>
+                    <tr key={r.id}>
+                      <td className={styles.cellStrong}>{r.nombre} {r.esInicial && <span className={styles.badgeLocal}>anterior</span>}</td>
+                      <td>{r.tipo}</td>
+                      <td className="cifra">{r.ident}</td>
+                      <td className={`cifra ${styles.cellFuerte}`}>{r.saldo}</td>
+                      <td>
+                        {r.esInicial ? (
+                          <button className={styles.btnMenu} title="Eliminar saldo anterior" onClick={() => borrarSaldoInicial(r.saldoInicialId)}><X size={15} /></button>
+                        ) : null}
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
               </table>

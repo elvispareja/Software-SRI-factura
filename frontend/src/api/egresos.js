@@ -36,7 +36,7 @@ export const TIPOS_ANTICIPO = [
   { codigo: 'APP', nombre: 'Pagado a proveedor' },
 ];
 
-export const ESTADOS_ANTICIPO = ['Pendiente', 'Parcial', 'Aplicado', 'Anulado'];
+export const ESTADOS_ANTICIPO = ['Pendiente', 'Parcial', 'Aplicado', 'Anulado', 'Devuelto'];
 
 // --------------------------------------------------------------------------
 // Tipos de gasto
@@ -176,6 +176,18 @@ export const aplicarAnticipo = (id, monto) =>
   api.crear(`/anticipos/${id}/aplicar`, { monto: String(monto) });
 export const anularAnticipo = (id) => api.crear(`/anticipos/${id}/anular`);
 export const eliminarAnticipo = (id) => api.eliminar(`/anticipos/${id}`);
+
+/** Corrige monto, receptor, tipo o detalle de un anticipo con saldo. */
+export const corregirAnticipo = (id, anticipo, receptorId) =>
+  api.actualizar(`/anticipos/${id}`, anticipoHaciaApi(anticipo, receptorId));
+
+/** Devuelve el saldo sobrante; el servidor calcula el monto. */
+export const devolverAnticipo = (id, datos = {}) =>
+  api.crear(`/anticipos/${id}/devolver`, {
+    fecha: datos.fecha || null,
+    forma_pago: datos.formaPago ?? 'Transferencia',
+    observacion: datos.observacion || null,
+  });
 
 // --------------------------------------------------------------------------
 // Facturación recurrente

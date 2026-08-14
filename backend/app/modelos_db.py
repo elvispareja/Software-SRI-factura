@@ -592,6 +592,32 @@ class Anticipo(Base):
         return self.monto - self.facturado
 
 
+class DevolucionAnticipo(Base):
+    """
+    Devolución del saldo sobrante de un anticipo.
+
+    Cuando un anticipo se devuelve, el saldo (`monto - facturado`) sale de caja.
+    Se guarda como registro propio —y no como un ajuste del anticipo— para que
+    el movimiento de dinero quede explicado por separado, igual que un egreso se
+    separa del gasto. El servidor calcula el monto; no se genera asiento
+    contable porque este sistema no lleva libro.
+    """
+
+    __tablename__ = "devoluciones_anticipo"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    anticipo_id: Mapped[int] = mapped_column(
+        ForeignKey("anticipos.id", ondelete="CASCADE"), index=True
+    )
+    fecha: Mapped[date] = mapped_column(Date, index=True)
+    monto: Mapped[Decimal] = mapped_column(DINERO, default=Decimal("0"))
+    forma_pago: Mapped[str] = mapped_column(String(30), default="Transferencia")
+    observacion: Mapped[str | None] = mapped_column(Text, default=None)
+    creado_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=ahora)
+
+    anticipo: Mapped["Anticipo"] = relationship()
+
+
 class PlantillaRecurrente(Base):
     """
     Factura que se repite: arriendos, suscripciones, iguala mensual.
@@ -736,6 +762,38 @@ class Recibo(Base):
     cuota: Mapped["Cuota | None"] = relationship(back_populates="recibos")
     comprobante: Mapped["Comprobante | None"] = relationship()
     cuenta: Mapped["CuentaBancaria | None"] = relationship()
+
+
+class SaldoInicial(Base):
+    """
+    Saldo anterior cargado a mano: deuda que ya existía antes de usar Factoa.
+
+    No sale de ningún comprobante ni cuota del sistema; es un arrastre que el
+    usuario registra para que las cuentas por cobrar/pagar reflejen también lo
+    que se debía de antes. Por eso vive en su propia tabla y **no** entra en el
+    cálculo de saldos vivos (`servicios/reportes_cuentas.py`): sumarlos allí
+    arriesgaría un doble conteo. La pantalla los combina solo en el frontend.
+    """
+
+    __tablename__ = "saldos_iniciales"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    receptor_id: Mapped[int | None] = mapped_column(
+        ForeignKey("receptores.id", ondelete="SET NULL"), default=None
+    )
+    # Se copia el nombre y la identificación: si el receptor se desactiva o el
+    # saldo se cargó a nombre libre, el histórico sigue diciendo de quién era.
+    receptor_razon_social: Mapped[str] = mapped_column(String(300), default="")
+    identificacion: Mapped[str] = mapped_column(String(20), default="")
+    # cobrar: nos lo deben. pagar: lo debemos.
+    tipo: Mapped[str] = mapped_column(String(10), default="cobrar")
+    monto: Mapped[Decimal] = mapped_column(DINERO, default=Decimal("0"))
+    fecha: Mapped[date] = mapped_column(Date, index=True)
+    detalle: Mapped[str] = mapped_column(String(300), default="")
+    documento: Mapped[str] = mapped_column(String(50), default="")
+    creado_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=ahora)
+
+    receptor: Mapped["Receptor | None"] = relationship()
 
 
 class ListaAuxiliar(Base):

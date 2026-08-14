@@ -7,6 +7,11 @@
 
 export const URL_API = import.meta.env.VITE_URL_API ?? 'http://localhost:8000/api';
 
+// Evento global que se emite cuando el servidor responde 401: la sesión caducó
+// o la cookie ya no vale. Quien maneje la sesión (SesionProvider) lo escucha y
+// limpia el estado local, en vez de que cada `catch` tenga que reconocer el 401.
+export const EVENTO_SESION_EXPIRADA = 'sesion:expirada';
+
 export class ErrorApi extends Error {
   constructor(mensaje, { estado = 0, detalles = null } = {}) {
     super(mensaje);
@@ -67,6 +72,12 @@ export async function peticion(ruta, { metodo = 'GET', cuerpo, senal, ...resto }
   const cuerpoRespuesta = tipo.includes('application/json') ? await respuesta.json() : null;
 
   if (!respuesta.ok) {
+    // Un 401 significa que la sesión ya no vale: se avisa una sola vez por un
+    // evento global y se sigue lanzando el ErrorApi como siempre, para no
+    // romper los `catch` que ya lo esperan.
+    if (respuesta.status === 401 && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(EVENTO_SESION_EXPIRADA));
+    }
     throw new ErrorApi(describirError(cuerpoRespuesta, respuesta.status), {
       estado: respuesta.status,
       detalles: cuerpoRespuesta,

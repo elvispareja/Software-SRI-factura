@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   AlertTriangle,
   RefreshCw,
-  MoreHorizontal,
 } from 'lucide-react';
 import {
   Area,
@@ -135,7 +134,6 @@ export default function Dashboard() {
                 </div>
                 <div className={styles.chartActions}>
                   <button className={styles.chartBtn} onClick={reporte.recargar} title="Actualizar"><RefreshCw size={16} /></button>
-                  <button className={styles.chartBtn} title="Opciones"><MoreHorizontal size={16} /></button>
                 </div>
               </div>
               <div className={styles.chartWrapper}>

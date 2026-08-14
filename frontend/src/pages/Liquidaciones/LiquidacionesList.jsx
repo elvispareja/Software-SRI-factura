@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, MoreVertical } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useTablaFiltrada, VALOR_TODOS } from '../../hooks/useTablaFiltrada';
 import { useRecurso } from '../../hooks/useRecurso';
 import { documentoDesdeApi, TIPOS } from '../../api/documentos';
@@ -67,7 +67,7 @@ export default function LiquidacionesList() {
     { key: 'estado', titulo: 'ESTADO', align: 'center', render: (r) => { const est = r.estadoSRI ?? r.estado; return <span className={`${estilos.chip} ${claseEstado(est)}`}>{est}</span>; } },
     { key: 'trib', titulo: 'TRIBUTACIÓN', align: 'center', render: (_r) => <span className={`${estilos.chip} ${estilos.chipExito}`}>Aceptado</span> },
     { key: 'correo', titulo: 'CORREO', align: 'center', render: () => <span className={`${estilos.chip} ${estilos.chipExito}`}>enviado</span> },
-    { key: 'acciones', titulo: 'ACCIONES', align: 'center', render: (r) => <span className={estilos.acciones}><button onClick={() => navigate(`/comprobantes/${r.id}`)} className={estilos.btnVer}><Eye size={16} /></button><button className={estilos.btnMas}><MoreVertical size={16} /></button></span> },
+    { key: 'acciones', titulo: 'ACCIONES', align: 'center', render: (r) => <span className={estilos.acciones}><button onClick={() => navigate(`/comprobantes/${r.id}`)} className={estilos.btnVer}><Eye size={16} /></button></span> },
   ];
 
   return (
