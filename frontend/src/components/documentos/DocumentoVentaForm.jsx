@@ -12,6 +12,8 @@ import {
   UserRound,
   Loader2,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { useCatalogos } from '../../hooks/useCatalogos';
 import { crearDocumento, emitirAlSri, TIPOS } from '../../api/documentos';
@@ -241,42 +243,65 @@ export default function DocumentoVentaForm({
         </div>
         <div className={styles.headerActions}>
           {accionesSecundarias}
-          <button
-            className={styles.btnSecondary}
-            onClick={guardarBorrador}
-            disabled={!puedeGuardar}
-            title={
-              catalogos.usandoDemo
-                ? 'Sin conexión con el servidor: no se puede guardar.'
-                : validacion.esValido
-                  ? 'Guarda el documento como borrador, sin enviarlo al SRI.'
-                  : validacion.errores[0]
-            }
-          >
-            <Save size={18} /> Guardar borrador
-          </button>
-          <button
-            className={styles.btnPrimary}
-            onClick={guardar}
-            disabled={!puedeGuardar}
-            title={
-              catalogos.usandoDemo
-                ? 'Sin conexión con el servidor: no se puede guardar.'
-                : validacion.esValido
-                  ? undefined
-                  : validacion.errores[0]
-            }
-          >
-            {guardando ? (
-              <>
-                <Loader2 size={18} className={styles.girando} /> Guardando…
-              </>
-            ) : (
-              <>
-                <IconoAccion size={18} /> {accionPrincipal.texto}
-              </>
-            )}
-          </button>
+          {/* Asistente por pasos: se avanza con Siguiente y solo en el último
+              paso aparecen Guardar borrador / Emitir, como en el diseño. */}
+          {tabIdx > 0 && !guardado && (
+            <button
+              className={styles.btnSecondary}
+              onClick={() => setTabIdx((i) => Math.max(0, i - 1))}
+              disabled={guardando}
+            >
+              <ChevronLeft size={18} /> Anterior
+            </button>
+          )}
+          {tabIdx < tabDefs.length - 1 ? (
+            <button
+              className={styles.btnPrimary}
+              onClick={() => setTabIdx((i) => Math.min(tabDefs.length - 1, i + 1))}
+              disabled={guardando || Boolean(guardado)}
+            >
+              Siguiente <ChevronRight size={18} />
+            </button>
+          ) : (
+            <>
+              <button
+                className={styles.btnSecondary}
+                onClick={guardarBorrador}
+                disabled={!puedeGuardar}
+                title={
+                  catalogos.usandoDemo
+                    ? 'Sin conexión con el servidor: no se puede guardar.'
+                    : validacion.esValido
+                      ? 'Guarda el documento como borrador, sin enviarlo al SRI.'
+                      : validacion.errores[0]
+                }
+              >
+                <Save size={18} /> Guardar borrador
+              </button>
+              <button
+                className={styles.btnPrimary}
+                onClick={guardar}
+                disabled={!puedeGuardar}
+                title={
+                  catalogos.usandoDemo
+                    ? 'Sin conexión con el servidor: no se puede guardar.'
+                    : validacion.esValido
+                      ? undefined
+                      : validacion.errores[0]
+                }
+              >
+                {guardando ? (
+                  <>
+                    <Loader2 size={18} className={styles.girando} /> Guardando…
+                  </>
+                ) : (
+                  <>
+                    <IconoAccion size={18} /> {accionPrincipal.texto}
+                  </>
+                )}
+              </button>
+            </>
+          )}
         </div>
       </header>
 
