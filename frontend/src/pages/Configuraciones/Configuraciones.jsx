@@ -432,7 +432,8 @@ export default function Configuraciones() {
                   <div className={styles.cwoCardFoot}>
                     <button
                       className={styles.btnPrimary}
-                      onClick={() => setAviso({ tono: 'ok', texto: 'Datos de usuario actualizados.' })}
+                      disabled
+                      title="Edición de perfil — próximamente. Aún no se guarda en el servidor."
                     >
                       <Save size={15} /> Guardar Cambios
                     </button>
@@ -462,7 +463,8 @@ export default function Configuraciones() {
                   <div className={styles.cwoCardFoot}>
                     <button
                       className={styles.btnPrimary}
-                      onClick={() => setAviso({ tono: 'ok', texto: 'Preferencias de correo guardadas.' })}
+                      disabled
+                      title="Preferencias de correo — próximamente. Aún no se guardan en el servidor."
                     >
                       <Save size={15} /> Guardar Preferencias
                     </button>
@@ -902,7 +904,7 @@ export default function Configuraciones() {
                       </div>
                     </div>
                     <div className={styles.cwoCardFootRight}>
-                      <button className={styles.btnPrimary} onClick={() => setAviso({ tono: 'ok', texto: 'Configuración de PDF guardada.' })}>
+                      <button className={styles.btnPrimary} disabled title="Diseño del PDF — próximamente. Aún no se guarda en el servidor.">
                         <Save size={15} /> Guardar Configuración
                       </button>
                     </div>
@@ -918,7 +920,7 @@ export default function Configuraciones() {
                     <FieldFloat label="Mostrar Logo" value="No Mostrar" chev float />
                   </div>
                   <div className={styles.cwoCardFootRight}>
-                    <button className={styles.btnPrimary} onClick={() => setAviso({ tono: 'ok', texto: 'Configuración POS guardada.' })}>
+                    <button className={styles.btnPrimary} disabled title="Configuración POS — próximamente. Aún no se guarda en el servidor.">
                       Guardar
                     </button>
                   </div>
@@ -954,10 +956,10 @@ export default function Configuraciones() {
                   </p>
                 </div>
                 <div className={styles.cwoInfoGrayActions}>
-                  <button className={styles.btnSuccess} onClick={() => setAviso({ tono: 'ok', texto: 'Descargando Factoa Print para Windows (simulado).' })}>
+                  <button className={styles.btnSuccess} disabled title="Factoa Print — próximamente.">
                     <Upload size={15} /> Descargar Factoa Print Para Windows
                   </button>
-                  <button className={styles.linkMuted} onClick={() => setAviso({ tono: 'ok', texto: 'Asistente de instalación — próximamente.' })}>
+                  <button className={styles.linkMuted} disabled title="Asistente de instalación — próximamente.">
                     Abrir Asistente De Instalación
                   </button>
                 </div>
@@ -973,13 +975,13 @@ export default function Configuraciones() {
                     <div className={styles.cwoCardTitle}>Impresoras por terminal</div>
                   </div>
                   <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap' }}>
-                    <button className={styles.btnGhost} onClick={() => setAviso({ tono: 'ok', texto: 'Buscando terminales…' })}>
+                    <button className={styles.btnGhost} disabled title="Impresoras por terminal — próximamente.">
                       <RefreshCw size={14} /> Refrescar
                     </button>
-                    <button className={styles.btnPrimary} onClick={() => setAviso({ tono: 'ok', texto: 'Próximamente: crear terminal Cocina/Bar/Postres.' })}>
+                    <button className={styles.btnPrimary} disabled title="Impresoras por terminal — próximamente.">
                       <Plus size={14} /> Terminal
                     </button>
-                    <button className={styles.btnSuccess} onClick={() => setAviso({ tono: 'ok', texto: 'Instalando Factoa Print…' })}>
+                    <button className={styles.btnSuccess} disabled title="Impresoras por terminal — próximamente.">
                       <RefreshCw size={14} /> Instalar Factoa Print
                     </button>
                   </div>

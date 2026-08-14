@@ -14,6 +14,9 @@ export const empresaDesdeApi = (registro) => ({
   regimen: registro.regimen,
   obligadoContabilidad: registro.obligado_contabilidad,
   agenteRetencion: registro.agente_retencion ?? '',
+  // Se conserva aunque el formulario no lo edite: si no se reenvía, el backend
+  // lo pone en null al guardar la empresa y deja de poder emitir retenciones.
+  contribuyenteEspecial: registro.contribuyente_especial ?? '',
   contribuyenteRimpe: Boolean(registro.contribuyente_rimpe),
   ambiente: registro.ambiente,
 });
@@ -30,6 +33,8 @@ export const empresaHaciaApi = (empresa) => ({
   regimen: empresa.regimen,
   obligado_contabilidad: empresa.obligadoContabilidad,
   agente_retencion: empresa.agenteRetencion || null,
+  // Se reenvía el valor cargado para que guardar la empresa no lo borre.
+  contribuyente_especial: empresa.contribuyenteEspecial || null,
   // El backend guarda la leyenda, no un booleano.
   contribuyente_rimpe: empresa.contribuyenteRimpe
     ? 'CONTRIBUYENTE RÉGIMEN RIMPE'

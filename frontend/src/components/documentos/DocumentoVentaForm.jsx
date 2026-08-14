@@ -14,7 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useCatalogos } from '../../hooks/useCatalogos';
-import { crearDocumento } from '../../api/documentos';
+import { crearDocumento, emitirAlSri, TIPOS } from '../../api/documentos';
 import {
   calcularComprobante,
   validarComprobante,
@@ -151,7 +151,11 @@ export default function DocumentoVentaForm({
   const eliminarLinea = (id) =>
     setLineas((actuales) => actuales.filter((linea) => linea.id !== id));
 
-  const guardar = async () => {
+  // La cotización es el único tipo que no viaja al SRI; el resto sí se emite.
+  const emiteAlSri = tipo !== TIPOS.COTIZACION;
+
+  // Guarda el documento como borrador, sin transmitirlo al SRI.
+  const guardarBorrador = async () => {
     setGuardando(true);
     setErrorGuardado(null);
 
@@ -166,6 +170,42 @@ export default function DocumentoVentaForm({
       setGuardado(datos);
       // Se deja un momento el mensaje de éxito antes de volver al listado.
       setTimeout(() => navegar(rutaVolver), 1400);
+    } catch (fallo) {
+      setErrorGuardado(fallo.message);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  // Acción principal: crea el documento y, si es un comprobante electrónico,
+  // lo transmite al SRI en el mismo paso (el botón dice "Emitir al SRI").
+  const guardar = async () => {
+    setGuardando(true);
+    setErrorGuardado(null);
+
+    try {
+      const { datos } = await crearDocumento({
+        tipo,
+        receptorId: cliente.id,
+        formaPago,
+        lineas,
+        ...datosExtra,
+      });
+
+      if (!emiteAlSri) {
+        setGuardado(datos);
+        setTimeout(() => navegar(rutaVolver), 1400);
+        return;
+      }
+
+      // El borrador ya quedó creado; si la transmisión falla, la traza del
+      // documento permite ver el motivo y reintentar sin perder el trabajo.
+      try {
+        await emitirAlSri(datos.id);
+      } catch {
+        /* el estado real (Devuelto/Error/Pendiente) se muestra en la traza */
+      }
+      navegar(`/comprobantes/${datos.id}`);
     } catch (fallo) {
       setErrorGuardado(fallo.message);
     } finally {
@@ -201,7 +241,18 @@ export default function DocumentoVentaForm({
         </div>
         <div className={styles.headerActions}>
           {accionesSecundarias}
-          <button className={styles.btnSecondary} disabled={guardando || Boolean(guardado)}>
+          <button
+            className={styles.btnSecondary}
+            onClick={guardarBorrador}
+            disabled={!puedeGuardar}
+            title={
+              catalogos.usandoDemo
+                ? 'Sin conexión con el servidor: no se puede guardar.'
+                : validacion.esValido
+                  ? 'Guarda el documento como borrador, sin enviarlo al SRI.'
+                  : validacion.errores[0]
+            }
+          >
             <Save size={18} /> Guardar borrador
           </button>
           <button

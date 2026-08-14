@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { URL_API } from '../../api/cliente';
 import {
   Home,
   Users,
@@ -63,7 +62,6 @@ export default function Layout() {
   );
   const [sidebarAbierto, setSidebarAbierto] = useState(esEscritorio);
   const [assistant, setAssistant] = useState('');
-  const [assistantEnviando, setAssistantEnviando] = useState(false);
   const [assistantToast, setAssistantToast] = useState(null);
   const assistantToastRef = useRef(null);
 
@@ -141,45 +139,16 @@ export default function Layout() {
     assistantToastRef.current = setTimeout(() => setAssistantToast(null), 4200);
   };
 
-  const onAssistantSend = async () => {
+  const onAssistantSend = () => {
     const t = assistant.trim();
-    if (!t || assistantEnviando) return;
+    if (!t) return;
     setAssistant('');
-    // Si hay sesión real, intenta POST al backend WhatsApp (Graph API v21.0 vía orquestador).
-    // El header no tiene número de WhatsApp: se informa al usuario cómo contactar al bot.
-    if (!usuario || usuario.modoDemo) {
-      mostrarAssistantToast('Escribe al bot de WhatsApp directamente. El asistente del header requiere sesión activa.');
-      window.dispatchEvent(new CustomEvent('cwo:assistant', { detail: t }));
-      return;
-    }
-    setAssistantEnviando(true);
-    try {
-      // El webhook real es POST /api/whatsapp (HMAC + BackgroundTasks → orquestador.atender_mensaje).
-      // Desde el header no hay from/to de WhatsApp, así que se usa un endpoint de asistencia si existe,
-      // o se deja el toast informativo y se emite evento para que una vista lo capture.
-      const resp = await fetch(`${URL_API}/whatsapp/asistir`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto: t }),
-      });
-      if (resp.ok) {
-        const data = await resp.json().catch(() => null);
-        mostrarAssistantToast(data?.respuesta || 'Asistente: mensaje enviado. Revisa WhatsApp para la respuesta.');
-      } else if (resp.status === 404) {
-        // Endpoint aún no existe — fallback documentado
-        mostrarAssistantToast('Asistente WhatsApp: escribe al número del bot para facturar por chat. Ver docs/avance_fase2_config_soporte_whatsapp.md');
-        window.dispatchEvent(new CustomEvent('cwo:assistant', { detail: t }));
-      } else {
-        const err = await resp.json().catch(() => null);
-        mostrarAssistantToast(err?.detail || 'No se pudo contactar al asistente. Intenta desde WhatsApp.');
-      }
-    } catch {
-      mostrarAssistantToast('Sin conexión con el asistente. Escribe al bot de WhatsApp directamente.');
-      window.dispatchEvent(new CustomEvent('cwo:assistant', { detail: t }));
-    } finally {
-      setAssistantEnviando(false);
-    }
+    // El asistente por WhatsApp funciona escribiendo al número del bot (webhook
+    // real POST /api/whatsapp). Desde el header no hay conversación de WhatsApp
+    // ni un endpoint de asistencia, así que se informa cómo usarlo en vez de
+    // fingir un envío; la vista que quiera capturar el texto escucha el evento.
+    mostrarAssistantToast('Para facturar por chat, escribe al número del bot de WhatsApp. Este cuadro es solo una nota rápida.');
+    window.dispatchEvent(new CustomEvent('cwo:assistant', { detail: t }));
   };
 
   return (
@@ -540,7 +509,6 @@ export default function Layout() {
                   onKeyDown={(e) => e.key === 'Enter' && onAssistantSend()}
                   placeholder="ej., Crear Factura para Juan..."
                   aria-label="WhatsApp AI Assistant"
-                  disabled={assistantEnviando}
                 />
                 <button
                   type="button"
@@ -548,8 +516,6 @@ export default function Layout() {
                   onClick={onAssistantSend}
                   title="Enviar"
                   aria-label="Enviar al asistente"
-                  disabled={assistantEnviando}
-                  style={{ opacity: assistantEnviando ? 0.6 : 1 }}
                 >
                   <Mic size={19} strokeWidth={1.9} />
                 </button>

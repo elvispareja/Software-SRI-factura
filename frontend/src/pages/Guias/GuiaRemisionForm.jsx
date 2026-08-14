@@ -136,6 +136,22 @@ export default function GuiaRemisionForm() {
     }
   };
 
+  // Guarda la guía como borrador, sin transmitirla al SRI.
+  const guardarBorrador = async () => {
+    setGuardando(true);
+    setErrorGuardado(null);
+
+    try {
+      const { datos } = await crearGuia(guia, transportista.id, items);
+      setGuardada(datos);
+      setTimeout(() => navegar('/guias'), 1800);
+    } catch (fallo) {
+      setErrorGuardado(fallo.message);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
   const actualizar = (campo, valor) =>
     setGuia((actual) => {
       if (campo === 'provinciaPartida') return { ...actual, provinciaPartida: valor, cantonPartida: '' };
@@ -180,7 +196,16 @@ export default function GuiaRemisionForm() {
           </div>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.btnSecondary} disabled={guardando || Boolean(guardada)}>
+          <button
+            className={styles.btnSecondary}
+            onClick={guardarBorrador}
+            disabled={errores.length > 0 || catalogos.usandoDemo || guardando || Boolean(guardada)}
+            title={
+              catalogos.usandoDemo
+                ? 'Sin conexión con el servidor: no se puede guardar.'
+                : 'Guarda la guía como borrador, sin enviarla al SRI.'
+            }
+          >
             <Save size={18} /> Guardar borrador
           </button>
           <button

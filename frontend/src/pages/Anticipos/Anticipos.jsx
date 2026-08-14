@@ -240,8 +240,8 @@ export default function Anticipos() {
                     <td style={{ textAlign: 'center' }}>
                       <div className={styles.accionesCell}>
                         <button className={styles.btnAccion} title="Anular" onClick={() => accionAnticipo(r.id, 'anular')}>⊘</button>
-                        <button className={styles.btnAccion} title="Devolver" onClick={() => accionAnticipo(r.id, 'devolver')}>↩</button>
-                        <button className={styles.btnAccion} title="Corregir" onClick={() => accionAnticipo(r.id, 'corregir')}>✎</button>
+                        <button className={styles.btnAccion} title="Devolver — próximamente" disabled>↩</button>
+                        <button className={styles.btnAccion} title="Corregir — próximamente" disabled>✎</button>
                       </div>
                     </td>
                   </tr>

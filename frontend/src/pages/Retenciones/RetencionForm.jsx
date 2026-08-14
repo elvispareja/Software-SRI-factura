@@ -213,6 +213,22 @@ export default function RetencionForm() {
     }
   };
 
+  // Guarda la retención como borrador, sin transmitirla al SRI.
+  const guardarBorrador = async () => {
+    setGuardando(true);
+    setErrorGuardado(null);
+
+    try {
+      const { datos } = await crearRetencion(retencion, proveedor.id, lineas);
+      setGuardada(datos);
+      setTimeout(() => navegar('/retenciones'), 1800);
+    } catch (fallo) {
+      setErrorGuardado(fallo.message);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -228,7 +244,16 @@ export default function RetencionForm() {
           </div>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.btnSecondary} disabled={guardando || Boolean(guardada)}>
+          <button
+            className={styles.btnSecondary}
+            onClick={guardarBorrador}
+            disabled={errores.length > 0 || catalogos.usandoDemo || guardando || Boolean(guardada)}
+            title={
+              catalogos.usandoDemo
+                ? 'Sin conexión con el servidor: no se puede guardar.'
+                : 'Guarda la retención como borrador, sin enviarla al SRI.'
+            }
+          >
             <Save size={18} /> Guardar borrador
           </button>
           <button

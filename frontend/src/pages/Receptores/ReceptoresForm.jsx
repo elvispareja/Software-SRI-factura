@@ -67,7 +67,6 @@ export default function ReceptoresForm() {
   // esos comprobantes apuntando a otra persona. El toggle de abajo es la
   // única forma de desbloquearla, a propósito.
   const [identidadBloqueada, setIdentidadBloqueada] = useState(esEdicion);
-  const [consultandoSri, setConsultandoSri] = useState(false);
   const [cargando, setCargando] = useState(Boolean(esEdicion));
   const [errorCarga, setErrorCarga] = useState(null);
   const [guardando, setGuardando] = useState(false);
@@ -140,14 +139,6 @@ export default function ReceptoresForm() {
     receptor.razonSocial.trim() !== '' &&
     receptor.direccion.trim() !== '' &&
     receptor.correo.trim() !== '';
-
-  /** Simula la consulta al SRI: el backend hará la llamada real. Propaga 409 si existiera. */
-  const consultarSri = () => {
-    if (!validacion.esValida) return;
-    setConsultandoSri(true);
-    setAyudaError(null);
-    setTimeout(() => setConsultandoSri(false), 700);
-  };
 
   const guardar = async () => {
     if (!camposObligatoriosCompletos || guardando) return;
@@ -297,9 +288,8 @@ export default function ReceptoresForm() {
                     />
                     <button
                       className={styles.btnAction}
-                      title="Buscar en SRI"
-                      onClick={consultarSri}
-                      disabled={!validacion.esValida || consultandoSri}
+                      title="Consulta automática al padrón del SRI — próximamente"
+                      disabled
                       type="button"
                     >
                       <Search size={18} />
