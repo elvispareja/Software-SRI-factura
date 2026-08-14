@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Search, Plus, FileText, SearchX } from 'lucide-react';
 import { useTablaFiltrada, VALOR_TODOS } from '../../hooks/useTablaFiltrada';
 import { formatearMoneda } from '../../lib/sri/calculoComprobante';
+import { urlRide } from '../../api/documentos';
 import { METODOS_PAGO, TONO_ESTADO } from '../../data/documentosVenta';
 import Paginacion from '../ui/Paginacion';
 import { AvisoDemo, ErrorCarga, TablaCargando } from '../ui/EstadoCarga';
@@ -170,7 +171,25 @@ export default function ListaDocumentosVenta({
                       </span>
                     </td>
                     <td>
-                      <button className={styles.btnActionSmall}>Ver PDF</button>
+                      {usandoDemo ? (
+                        <button
+                          className={styles.btnActionSmall}
+                          disabled
+                          title="Sin conexión: el PDF no está disponible en modo demostración."
+                        >
+                          Ver PDF
+                        </button>
+                      ) : (
+                        <a
+                          className={styles.btnActionSmall}
+                          href={urlRide(item.id)}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Abrir el PDF (RIDE) en una pestaña nueva."
+                        >
+                          Ver PDF
+                        </a>
+                      )}
                     </td>
                   </tr>
                 ))}
