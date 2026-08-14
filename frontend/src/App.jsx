@@ -11,6 +11,7 @@ import ComprobantesList from './pages/Comprobantes/ComprobantesList';
 import ComprobanteTraza from './pages/Comprobantes/ComprobanteTraza';
 import FacturaForm from './pages/Comprobantes/FacturaForm';
 import NotaCreditoForm from './pages/Comprobantes/NotaCreditoForm';
+import NotasList from './pages/Comprobantes/NotasList';
 import CotizacionesList from './pages/Cotizaciones/CotizacionesList';
 import CotizacionForm from './pages/Cotizaciones/CotizacionForm';
 import NotasVentaList from './pages/NotasVenta/NotasVentaList';
@@ -58,6 +59,7 @@ function App() {
               path="comprobantes/nota-debito"
               element={<NotaCreditoForm variante="debito" />}
             />
+            <Route path="comprobantes/notas" element={<NotasList />} />
 
             <Route path="cotizaciones" element={<CotizacionesList />} />
             <Route path="cotizaciones/nueva" element={<CotizacionForm />} />

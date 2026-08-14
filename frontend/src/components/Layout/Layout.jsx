@@ -289,7 +289,7 @@ export default function Layout() {
                 <span className={styles.subLabel}>Guia Remisión</span>
               </NavLink>
               <NavLink
-                to="/comprobantes/nota-credito"
+                to="/comprobantes/notas"
                 className={({ isActive }) =>
                   `${styles.subItem} ${isActive ? styles.subActive : ''}`
                 }
