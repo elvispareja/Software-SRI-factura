@@ -203,6 +203,30 @@
   text-align: right;
 }
 
+/* En los modales el buscador se apila en columna (.campoAncho); ahí el
+   `flex: 1 1 240px` de la barra de herramientas se leería como ALTO y crecía
+   a 240px. Dentro de una columna, que use su altura natural. */
+.campoAncho .buscador {
+  flex: 0 0 auto;
+}
+
+/* Tabla de líneas dentro de un modal: debe caber sin scroll lateral. Con
+   table-layout fijo respeta los anchos de columna y no se estira por el
+   contenido; los inputs ocupan el 100% de su celda en vez de su ancho
+   intrínseco (~170px), que era lo que desbordaba el diálogo. */
+.tablaModal {
+  table-layout: fixed;
+}
+.tablaModal th,
+.tablaModal td {
+  padding: 8px 10px;
+}
+.tablaModal .input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 .principal {
   font-weight: 600;
   color: var(--text-primary);

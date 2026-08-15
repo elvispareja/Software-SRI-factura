@@ -289,7 +289,7 @@ export default function PlantillaForm({ plantilla, onCerrar, onGuardado }) {
               />
             </div>
 
-            <table className={styles.tabla}>
+            <table className={`${styles.tabla} ${styles.tablaModal}`}>
               <thead>
                 <tr>
                   <th>Descripción</th>
