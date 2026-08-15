@@ -24,6 +24,15 @@ function claseEstado(estado) {
   return estilos.chipAviso;
 }
 
+// Tributación real según el estado del SRI (antes era un valor fijo "Aceptado"):
+// solo un comprobante autorizado está aceptado; uno rechazado o devuelto,
+// "Rechazada"; mientras no se transmite al SRI, "No Entregado".
+function tributacion(estado) {
+  if (estado === 'Autorizado') return 'Aceptado';
+  if (estado === 'Rechazado' || estado === 'Devuelto') return 'Rechazada';
+  return 'No Entregado';
+}
+
 export default function LiquidacionesList() {
   const [termino, setTermino] = useState('');
   const [fMetodo, setFMetodo] = useState(VALOR_TODOS);
@@ -39,10 +48,7 @@ export default function LiquidacionesList() {
     const est = r.estadoSRI ?? r.estado ?? '';
     if (fEstado !== VALOR_TODOS && est !== fEstado) return false;
     if (fMetodo !== VALOR_TODOS && r.metodo !== fMetodo) return false;
-    if (fTrib !== VALOR_TODOS) {
-      const trib = est === 'Autorizado' ? 'Aceptado' : est === 'Rechazado' ? 'Rechazada' : 'No Entregado';
-      if (trib !== fTrib) return false;
-    }
+    if (fTrib !== VALOR_TODOS && tributacion(est) !== fTrib) return false;
     if (archivado && est !== 'Anulado') return false;
     return true;
   }), [registros, fEstado, fMetodo, fTrib, archivado]);
@@ -65,8 +71,8 @@ export default function LiquidacionesList() {
     { key: 'saldo', titulo: 'SALDO', align: 'right', cifra: true, render: () => <span className={`cifra ${estilos.celdaSuave}`}>0.00</span> },
     { key: 'ncnd', titulo: 'NC|ND', align: 'center', render: () => <span className={estilos.celdaSuave}>0 | 0</span> },
     { key: 'estado', titulo: 'ESTADO', align: 'center', render: (r) => { const est = r.estadoSRI ?? r.estado; return <span className={`${estilos.chip} ${claseEstado(est)}`}>{est}</span>; } },
-    { key: 'trib', titulo: 'TRIBUTACIÓN', align: 'center', render: (_r) => <span className={`${estilos.chip} ${estilos.chipExito}`}>Aceptado</span> },
-    { key: 'correo', titulo: 'CORREO', align: 'center', render: () => <span className={`${estilos.chip} ${estilos.chipExito}`}>enviado</span> },
+    { key: 'trib', titulo: 'TRIBUTACIÓN', align: 'center', render: (r) => { const t = tributacion(r.estadoSRI ?? r.estado); const cls = t === 'Aceptado' ? estilos.chipExito : t === 'Rechazada' ? estilos.chipError : estilos.chipNeutro; return <span className={`${estilos.chip} ${cls}`}>{t}</span>; } },
+    { key: 'correo', titulo: 'CORREO', align: 'center', render: (r) => { const enviado = (r.estadoSRI ?? r.estado) === 'Autorizado'; return <span className={`${estilos.chip} ${enviado ? estilos.chipExito : estilos.chipNeutro}`}>{enviado ? 'enviado' : '—'}</span>; } },
     { key: 'acciones', titulo: 'ACCIONES', align: 'center', render: (r) => <span className={estilos.acciones}><button onClick={() => navigate(`/comprobantes/${r.id}`)} className={estilos.btnVer}><Eye size={16} /></button></span> },
   ];
 
